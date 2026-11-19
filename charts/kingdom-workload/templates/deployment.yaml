@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: {{ .Release.Namespace | quote }}
   name: {{ required "name is required" .Values.name | quote }}
   labels:
     app.kubernetes.io/name: {{ .Values.name | quote }}
