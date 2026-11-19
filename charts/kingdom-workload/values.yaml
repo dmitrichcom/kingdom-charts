@@ -1,0 +1,8 @@
+name: ''
+replicas: 1
+podSpec: {}
+podAnnotations: {}
+service:
+  enabled: false
+  type: ClusterIP
+  ports: []

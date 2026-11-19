@@ -1,0 +1,12 @@
+{{- if .Values.service.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.name | quote }}
+spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
+  selector:
+    app.kubernetes.io/name: {{ .Values.name | quote }}
+  ports:
+{{ toYaml .Values.service.ports | indent 4 }}
+{{- end }}

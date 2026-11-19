@@ -1,0 +1,6 @@
+apiVersion: v2
+name: kingdom-workload
+version: 0.1.0
+appVersion: "1.0.0"
+description: Portable Kubernetes Deployment and optional Service; Kingdom Docker compilation happens in CI.
+type: application

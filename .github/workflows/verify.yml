@@ -1,0 +1,24 @@
+name: Validate portable Kingdom Helm charts
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-helm@v4
+        with:
+          version: v3.19.0
+      - name: Run pinned qgate quality pyramid
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fLsS --retry 3 https://github.com/dmitrichcom/coding-harness-utilities/releases/download/qgate-v0.16.3/qgate-linux-amd64 \
+            -o "$RUNNER_TEMP/qgate"
+          echo "7a161e713de3ac5ac9f67d6d5d17b8600f4e3e2d4d970e79774daf55c0b604da  $RUNNER_TEMP/qgate" | sha256sum -c -
+          chmod +x "$RUNNER_TEMP/qgate"
+          "$RUNNER_TEMP/qgate" run --only-fresh
