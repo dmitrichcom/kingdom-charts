@@ -325,6 +325,10 @@ def compile_bundle(*, manifests: list[dict], generated: dict,
     compose["image"] = image
     compose["environment"] = _environment(container, anns)
     compose["restart"] = anns.get(PREFIX + "restart", "always")
+    if PREFIX + "docker-init" in anns:
+        raw_init = anns[PREFIX + "docker-init"]
+        require(raw_init in ("true", "false"), "docker-init annotation must be exactly true or false")
+        compose["init"] = raw_init == "true"
     require(compose["restart"] in {"always", "unless-stopped", "on-failure", "no"}, "invalid restart policy")
     _resources(compose, container)
     _security(compose, pod, container, anns)

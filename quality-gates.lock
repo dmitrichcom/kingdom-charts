@@ -247,7 +247,7 @@
             "kind": "directory",
             "path": "ops/shadow",
             "result": "present",
-            "sha256": "f355d167b3c88ef928d228204e9bb60cab5e7f32725214bcd87fd6d4085a67c8",
+            "sha256": "0210856c720d76c8f44cb1ff311a0ad59c4f558ef398cf65895d166bc5108c22",
             "nodeKind": "directory",
             "entries": [
               {
@@ -264,6 +264,10 @@
               },
               {
                 "path": "test_compile.py",
+                "kind": "file"
+              },
+              {
+                "path": "test_docker_init.py",
                 "kind": "file"
               },
               {
@@ -294,14 +298,14 @@
             "kind": "probe",
             "path": "ops/shadow/compile.py",
             "result": "present",
-            "sha256": "f3ca0b444a02164a4c073383725fc6f7ed5d8abbc10dd62a9dde4314b59c132e",
+            "sha256": "cbdef52f6281adce42a98eb68e553bee44f6451f48cb7c1428ff4e5e71938959",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "ops/shadow/compile.py",
             "result": "present",
-            "sha256": "184dab6a93765ed0cf27fb42a62a1b67abaf9f85fd0f8446c7b43b4cb766610e",
+            "sha256": "0f77f1fba7d42057778b84a74262114c6408c8fed412f08e16ccfc362e2f9809",
             "nodeKind": "file"
           },
           {
@@ -330,6 +334,20 @@
             "path": "ops/shadow/test_compile.py",
             "result": "present",
             "sha256": "5eeb599351ab0ad5dc77e3fefb747a1217117ee915c3e82cfa4c82b80581bd3a",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "probe",
+            "path": "ops/shadow/test_docker_init.py",
+            "result": "present",
+            "sha256": "65692e6740e67b11097f76008e19ec58ae676631805b11f573cf93239b5a7a2a",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "read",
+            "path": "ops/shadow/test_docker_init.py",
+            "result": "present",
+            "sha256": "648d5187bcee76efd8bc315f5a6c83202790f21048ff088397e3cd934e9e7713",
             "nodeKind": "file"
           },
           {
@@ -380,7 +398,7 @@
   ],
   "memory": {
     "definitionSha256": "11f7b9dd91a592de4f804d26f91ba9ccad1df9a0e1be3771366c9909511fbfa1",
-    "additionalBytes": 74653696
+    "additionalBytes": 75722752
   },
   "timings": [
     {
@@ -391,7 +409,7 @@
     {
       "gate": "kubernetes-compiler",
       "definitionSha256": "01dbb144e9861be7227fa1ff151e54346af15e2fec4fe36d32c7f912ef786770",
-      "durationNanos": 1463366578
+      "durationNanos": 1532097112
     }
   ]
 }
