@@ -2,3 +2,5 @@ schema: quality-gates/v3
 gates:
   - id: helm-template
     run: [sh, scripts/test-chart.sh]
+  - id: kubernetes-compiler
+    run: [sh, scripts/test-compiler.sh]

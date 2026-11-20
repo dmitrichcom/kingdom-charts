@@ -171,17 +171,159 @@
           }
         ]
       }
+    },
+    {
+      "gate": "kubernetes-compiler",
+      "run": [
+        "sh",
+        "scripts/test-compiler.sh"
+      ],
+      "definitionSha256": "01dbb144e9861be7227fa1ff151e54346af15e2fec4fe36d32c7f912ef786770",
+      "green": {
+        "inputs": [
+          {
+            "kind": "directory",
+            "path": ".",
+            "result": "present",
+            "sha256": "c5b65a63496d1edd55f4e0edcf9d3a4c0cd81e9a5d23081443d354a5f51d2787",
+            "nodeKind": "directory",
+            "entries": [
+              {
+                "path": ".git",
+                "kind": "directory"
+              },
+              {
+                "path": ".github",
+                "kind": "directory"
+              },
+              {
+                "path": "README.md",
+                "kind": "file"
+              },
+              {
+                "path": "charts",
+                "kind": "directory"
+              },
+              {
+                "path": "ops",
+                "kind": "directory"
+              },
+              {
+                "path": "quality-gates.yaml",
+                "kind": "file"
+              },
+              {
+                "path": "scripts",
+                "kind": "directory"
+              },
+              {
+                "path": "tests",
+                "kind": "directory"
+              }
+            ]
+          },
+          {
+            "kind": "probe",
+            "path": "ops",
+            "result": "present",
+            "sha256": "b94e2b88d768ddd93a501eb784e9fb8e84a04f9fe48a0d3399cbf1959f60f96c",
+            "nodeKind": "directory"
+          },
+          {
+            "kind": "directory",
+            "path": "ops/shadow",
+            "result": "present",
+            "sha256": "02b74e12b750cdd790d9864c992ca1eafd214a141434f9f64992cd1adb0483a6",
+            "nodeKind": "directory",
+            "entries": [
+              {
+                "path": "README.md",
+                "kind": "file"
+              },
+              {
+                "path": "compile.py",
+                "kind": "file"
+              },
+              {
+                "path": "test_compile.py",
+                "kind": "file"
+              }
+            ]
+          },
+          {
+            "kind": "probe",
+            "path": "ops/shadow",
+            "result": "present",
+            "sha256": "b94e2b88d768ddd93a501eb784e9fb8e84a04f9fe48a0d3399cbf1959f60f96c",
+            "nodeKind": "directory"
+          },
+          {
+            "kind": "probe",
+            "path": "ops/shadow/README.md",
+            "result": "present",
+            "sha256": "7107aedefbbc39ff7bc5ab65c9b0cd6987644521268132e7f9e45fb55e5fbc54",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "probe",
+            "path": "ops/shadow/compile.py",
+            "result": "present",
+            "sha256": "31ce7a5fbfdc6b95ab098f37c09abf3f8597861589fffccfc08f36feb63c48fd",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "read",
+            "path": "ops/shadow/compile.py",
+            "result": "present",
+            "sha256": "a5029759aa4ac23464f625f1ef7977a8e4df583c930ac857d41b0b4176634153",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "probe",
+            "path": "ops/shadow/test_compile.py",
+            "result": "present",
+            "sha256": "517674bfb6f5dbeb208b4657a4d577721e838c1de3b34b74e257c2a5e5428e60",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "read",
+            "path": "ops/shadow/test_compile.py",
+            "result": "present",
+            "sha256": "2e3a78bda10222a644d0f9850b45a0a102eeb0000bf9b474f0bac587e8283d8b",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "probe",
+            "path": "scripts/test-compiler.sh",
+            "result": "present",
+            "sha256": "8aa859de015f6b76552a97ba33053c94625b25c06467ed3088d88c136cd85d8f",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "read",
+            "path": "scripts/test-compiler.sh",
+            "result": "present",
+            "sha256": "b4cd4cc2f873abf13fe7f33e59a6fe7e3ae2bf8ad2c07371c992ae8a5fbf9ad4",
+            "nodeKind": "file"
+          }
+        ]
+      }
     }
   ],
   "memory": {
-    "definitionSha256": "6a627ad3c07424b024dcccc84143fb843e41a2963144a876d23fba798dc9aaae",
-    "additionalBytes": 10489856
+    "definitionSha256": "11f7b9dd91a592de4f804d26f91ba9ccad1df9a0e1be3771366c9909511fbfa1",
+    "additionalBytes": 74653696
   },
   "timings": [
     {
       "gate": "helm-template",
       "definitionSha256": "596dbf06e39a7a3314587852c2386eb9354f41576e0a5add79f6fadee15281b5",
       "durationNanos": 331479697
+    },
+    {
+      "gate": "kubernetes-compiler",
+      "definitionSha256": "01dbb144e9861be7227fa1ff151e54346af15e2fec4fe36d32c7f912ef786770",
+      "durationNanos": 1503311596
     }
   ]
 }

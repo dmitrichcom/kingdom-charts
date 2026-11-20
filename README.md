@@ -13,3 +13,17 @@ helm template stations-gateway ./charts/kingdom-workload -f /path/to/kingdom-env
 ```
 
 A future Argo CD `Application` can reference this chart and the environment values through Argo CD multi-source Helm value files. The chart is not tied to Docker or Kingdom.
+
+
+## Build-time Kingdom backend
+
+`ops/shadow/compile.py` adapts the pinned `helmfile2compose` output into the
+exact Kingdom OCI v2 runtime bundle contract. The source is intentionally kept
+alongside the portable Helm chart so downstream CI can check it out using only
+read access to this public repository; no personal access token or repository
+secret is needed to fetch a private CI workflow implementation.
+
+The adapter never runs on the VPS, ships no secret values, and requires strict
+structural parity against an explicit golden production Compose model.
+
+Validation: `qgate run --only-fresh` or `sh scripts/test-compiler.sh`.
