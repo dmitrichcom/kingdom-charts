@@ -89,14 +89,14 @@
             "kind": "probe",
             "path": "charts/kingdom-workload/templates/deployment.yaml",
             "result": "present",
-            "sha256": "68b79929d7d29bb2786d21892d1001aec7ea7c96db6901d8a50cdada5966cffb",
+            "sha256": "3dbdd23cd2aed0e6070abb3af75b509a2004f6f57509c1a38cd39ff3f15ab704",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "charts/kingdom-workload/templates/deployment.yaml",
             "result": "present",
-            "sha256": "66135a135b5fbe9a00785c172fdd9ede2fdcce5ca33f865cbc0bc13de4b3de64",
+            "sha256": "161c21d8caf27be571b6ceb14b628d89a0249372752134996dd9cadce24c1895",
             "nodeKind": "file"
           },
           {
@@ -117,42 +117,56 @@
             "kind": "probe",
             "path": "charts/kingdom-workload/values.schema.json",
             "result": "present",
-            "sha256": "1e150040c9be2517e15de624ff5679b3e70a82c129236ce8829ad824673ac0ee",
+            "sha256": "9622cc6bb120bf3acd29270da6082cef712af5ca78f8b670bfaf2e2e5bf3c265",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "charts/kingdom-workload/values.schema.json",
             "result": "present",
-            "sha256": "f484010301134763b1dabbbd0eb31605b320f2e7de348e36aa83d47e55582a68",
+            "sha256": "e79dc25349d56af3360f0771ea3f62ea090957afafaf94e1fe4ab62ee4d6cd58",
             "nodeKind": "file"
           },
           {
             "kind": "probe",
             "path": "charts/kingdom-workload/values.yaml",
             "result": "present",
-            "sha256": "53717675418e84470b5db9529968288fc336198b458db3e8043d548f54890587",
+            "sha256": "cda4be88b95225ebb77c64ccffacbb13e809eb78728f6b208148a4bdc5d025a9",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "charts/kingdom-workload/values.yaml",
             "result": "present",
-            "sha256": "a7dc435b18479d31f46a8287a95fb89758fa9abb9af1cff56875eed5547e48a7",
+            "sha256": "85df4ec07c954d6d5cd9cfa31abdc479d68a0184222d59c3b3ed6823cd5b699e",
             "nodeKind": "file"
           },
           {
             "kind": "probe",
             "path": "scripts/test-chart.sh",
             "result": "present",
-            "sha256": "6b91af6f65ef35c1a4e5b40631c5660fcb01ecfdb536a58299a39d3a0bcb4a4f",
+            "sha256": "2d3a874efd7baf94c9857ac1b3ee338e1ca76d790adb6c41a90336e360e99160",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "scripts/test-chart.sh",
             "result": "present",
-            "sha256": "6a6d496b902139965e48e0c2641dda3f9ea7ee4a9a3915f12f3bdea90e9e7d67",
+            "sha256": "dac2cc13a6c729ba4e8b93bee653e8ab1ade2ffb448800416ee9e621211ae59c",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "probe",
+            "path": "tests/values-version.yaml",
+            "result": "present",
+            "sha256": "deb4b643bd61e382ccdb8d3a85c134973111dff5c7b047cf1b77c80dc6c553e5",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "read",
+            "path": "tests/values-version.yaml",
+            "result": "present",
+            "sha256": "dcae0a435a7f483eee058c6770e0f92513e8b53ffaf2aaa1f3fc73f38b6df029",
             "nodeKind": "file"
           },
           {
@@ -233,7 +247,7 @@
             "kind": "directory",
             "path": "ops/shadow",
             "result": "present",
-            "sha256": "02b74e12b750cdd790d9864c992ca1eafd214a141434f9f64992cd1adb0483a6",
+            "sha256": "f355d167b3c88ef928d228204e9bb60cab5e7f32725214bcd87fd6d4085a67c8",
             "nodeKind": "directory",
             "entries": [
               {
@@ -245,7 +259,19 @@
                 "kind": "file"
               },
               {
+                "path": "pin_images.py",
+                "kind": "file"
+              },
+              {
                 "path": "test_compile.py",
+                "kind": "file"
+              },
+              {
+                "path": "test_emptydir_contract.py",
+                "kind": "file"
+              },
+              {
+                "path": "test_pin_images.py",
                 "kind": "file"
               }
             ]
@@ -268,28 +294,70 @@
             "kind": "probe",
             "path": "ops/shadow/compile.py",
             "result": "present",
-            "sha256": "31ce7a5fbfdc6b95ab098f37c09abf3f8597861589fffccfc08f36feb63c48fd",
+            "sha256": "f3ca0b444a02164a4c073383725fc6f7ed5d8abbc10dd62a9dde4314b59c132e",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "ops/shadow/compile.py",
             "result": "present",
-            "sha256": "a5029759aa4ac23464f625f1ef7977a8e4df583c930ac857d41b0b4176634153",
+            "sha256": "184dab6a93765ed0cf27fb42a62a1b67abaf9f85fd0f8446c7b43b4cb766610e",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "probe",
+            "path": "ops/shadow/pin_images.py",
+            "result": "present",
+            "sha256": "9e622339252a101547dd72617f33b2a0ece9ca9312d6ceab2e9e52e95282ca74",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "read",
+            "path": "ops/shadow/pin_images.py",
+            "result": "present",
+            "sha256": "ec12850f0a4246ce43e21b52ee86cdbda5130ce09bfe091806bb6e249e9088cf",
             "nodeKind": "file"
           },
           {
             "kind": "probe",
             "path": "ops/shadow/test_compile.py",
             "result": "present",
-            "sha256": "517674bfb6f5dbeb208b4657a4d577721e838c1de3b34b74e257c2a5e5428e60",
+            "sha256": "61d5a1ee9b021dc0b670ff0034908e180f1558e2889b12e6f2787e09d98f0d15",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "ops/shadow/test_compile.py",
             "result": "present",
-            "sha256": "2e3a78bda10222a644d0f9850b45a0a102eeb0000bf9b474f0bac587e8283d8b",
+            "sha256": "5eeb599351ab0ad5dc77e3fefb747a1217117ee915c3e82cfa4c82b80581bd3a",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "probe",
+            "path": "ops/shadow/test_emptydir_contract.py",
+            "result": "present",
+            "sha256": "2f3267520cec14bbf43fd5de11649564e98ae04b7fcf81a85980c7eef6d0d2a0",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "read",
+            "path": "ops/shadow/test_emptydir_contract.py",
+            "result": "present",
+            "sha256": "353ffa03856fdfa22d4bfece069f943f846fc65c0f37de0489ce8a230c173525",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "probe",
+            "path": "ops/shadow/test_pin_images.py",
+            "result": "present",
+            "sha256": "51f38decddb986aa7eef29f89f0bfd60505e8fb9ed6bef025cad3ecd09690e55",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "read",
+            "path": "ops/shadow/test_pin_images.py",
+            "result": "present",
+            "sha256": "290aaa75b07ab4d81a1d5e614b0463f973fb99819b7b3c993ae9e0914f5b5fa6",
             "nodeKind": "file"
           },
           {
@@ -318,12 +386,12 @@
     {
       "gate": "helm-template",
       "definitionSha256": "596dbf06e39a7a3314587852c2386eb9354f41576e0a5add79f6fadee15281b5",
-      "durationNanos": 331479697
+      "durationNanos": 438925200
     },
     {
       "gate": "kubernetes-compiler",
       "definitionSha256": "01dbb144e9861be7227fa1ff151e54346af15e2fec4fe36d32c7f912ef786770",
-      "durationNanos": 1503311596
+      "durationNanos": 1463366578
     }
   ]
 }
