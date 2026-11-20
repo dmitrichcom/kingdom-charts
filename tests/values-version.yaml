@@ -1,0 +1,10 @@
+name: demo
+replicas: 1
+application:
+  version: v1.2.3
+podSpec:
+  containers:
+    - name: demo
+      image: ghcr.io/dmitrichcom/demo
+    - name: worker
+      image: ghcr.io/dmitrichcom/demo-worker

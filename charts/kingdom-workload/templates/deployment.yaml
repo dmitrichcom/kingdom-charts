@@ -19,4 +19,14 @@ spec:
 {{ toYaml . | indent 8 }}
       {{- end }}
     spec:
-{{ toYaml .Values.podSpec | indent 6 }}
+{{- $spec := deepCopy .Values.podSpec }}
+{{- $version := (.Values.application | default dict).version | default "" }}
+{{- if $version }}
+{{- if not (regexMatch "^v(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$" $version) }}{{ fail "application.version must be a strict SemVer tag" }}{{- end }}
+{{- range $container := $spec.containers }}
+{{- $repository := required "container.image is required when application.version is set" $container.image }}
+{{- if not (regexMatch "^ghcr\\.io/[a-z0-9_.-]+/[a-z0-9_.-]+$" $repository) }}{{ fail "container.image must contain only an immutable GHCR repository name; application.version supplies the tag" }}{{- end }}
+{{- $_ := set $container "image" (printf "%s:%s" $repository $version) }}
+{{- end }}
+{{- end }}
+{{ toYaml $spec | indent 6 }}

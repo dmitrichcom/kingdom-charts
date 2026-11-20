@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from compile import BundleError, compile_bundle, semantic_diff
+from compile import BundleError, compile_bundle, semantic_diff, expected_with_release_images
 
 DIGEST = "ghcr.io/dmitrichcom/remote-station@sha256:" + "a" * 64
 
@@ -120,6 +120,18 @@ class CompileTests(unittest.TestCase):
         spec["containers"][0]["volumeMounts"].append({"name": "unsupported", "mountPath": "/data"})
         with self.assertRaisesRegex(BundleError, "unsupported"):
             self.compile(manifests=[obj])
+
+    def test_semver_promotion_changes_only_digest_within_same_repository(self):
+        previous, _ = self.compile()
+        updated = json.loads(json.dumps(previous))
+        updated["services"]["gateway"]["image"] = "ghcr.io/dmitrichcom/remote-station@sha256:" + "b" * 64
+        adjusted = expected_with_release_images(previous, updated, sample_manifest())
+        self.assertEqual(semantic_diff(adjusted,updated), [])
+        updated["services"]["gateway"]["read_only"] = False
+        self.assertTrue(semantic_diff(adjusted,updated))
+        updated["services"]["gateway"]["image"] = "ghcr.io/dmitrichcom/untrusted@sha256:" + "b" * 64
+        adjusted = expected_with_release_images(previous,updated,sample_manifest())
+        self.assertTrue(semantic_diff(adjusted,updated))
 
     def test_semantic_diff_detects_security_regression(self):
         first, _ = self.compile()

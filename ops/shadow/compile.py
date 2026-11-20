@@ -365,6 +365,27 @@ def semantic_diff(left, right, path: str = "$") -> list[str]:
     return [] if left == right else [f"{path}: {left!r} != {right!r}"]
 
 
+def expected_with_release_images(expected: dict, actual: dict, descriptor: dict) -> dict:
+    """Allow only image *digest* changes within each declared image repository.
+
+    All security options, mounts and other fields still undergo exact parity.
+    This is a contract update for SemVer promotions, not a broad diff ignore.
+    """
+    result = copy.deepcopy(expected)
+    allowed = {repository for stack in descriptor.get("stacks", [])
+               for repository in (stack.get("image_variables") or {}).values()}
+    for name, expected_service in (result.get("services") or {}).items():
+        old = expected_service.get("image")
+        new = ((actual.get("services") or {}).get(name) or {}).get("image")
+        if (isinstance(old, str) and isinstance(new, str)
+                and PINNED_IMAGE.fullmatch(old) and PINNED_IMAGE.fullmatch(new)):
+            old_repo = old.split("@", 1)[0]
+            new_repo = new.split("@", 1)[0]
+            if old_repo == new_repo and new_repo in allowed:
+                expected_service["image"] = new
+    return result
+
+
 def load_rendered(path: Path) -> list[dict]:
     values = [p for p in yaml.safe_load_all(path.read_text()) if p]
     require(all(isinstance(v, dict) for v in values), "invalid Kubernetes YAML document")
@@ -389,7 +410,7 @@ def main() -> int:
         actual = compile_bundle(manifests=manifests, generated=model, descriptor=descriptor, output=args.output)
         if args.expected_json:
             expected = json.loads(args.expected_json.read_text())
-            diff = semantic_diff(expected, actual)
+            diff = semantic_diff(expected_with_release_images(expected, actual, descriptor), actual)
             if diff:
                 raise BundleError("semantic parity failed:\n" + "\n".join(diff[:60]))
         kube_dir = args.output / "kubernetes"
