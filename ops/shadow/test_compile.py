@@ -9,7 +9,7 @@ from pathlib import Path
 
 from compile import BundleError, compile_bundle, semantic_diff, expected_with_release_images, main
 
-DIGEST = "ghcr.io/dmitrichcom/remote-station@sha256:" + "a" * 64
+DIGEST = "ghcr.io/dmitrichcom/example-service@sha256:" + "a" * 64
 
 
 def sample_deployment():
@@ -53,8 +53,8 @@ def sample_deployment():
 
 def sample_manifest():
     return {"schema_version": 1, "stacks": [{
-        "id": "stations-gateway", "compose_files": ["compose.yaml"],
-        "runtime_files": [], "image_variables": {"STATIONS_GATEWAY_IMAGE": "ghcr.io/dmitrichcom/remote-station"},
+        "id": "example-gateway", "compose_files": ["compose.yaml"],
+        "runtime_files": [], "image_variables": {"EXAMPLE_IMAGE": "ghcr.io/dmitrichcom/example-service"},
         "secret_files": {"router_public": "secrets/router-public"},
         "secret_env": ["MAX_UPLOAD_FILE_MIB"], "persistent_dirs": ["state"]
     }]}
@@ -90,7 +90,7 @@ class CompileTests(unittest.TestCase):
         self.assertEqual(svc["healthcheck"]["start_period"], "30s")
         self.assertEqual(len(svc["volumes"]), 2)
         self.assertIn("deploy/kingdom-runtime.json", paths)
-        self.assertIn("stacks/stations-gateway/compose.yaml", paths)
+        self.assertIn("stacks/example-gateway/compose.yaml", paths)
 
     def test_unpinned_image_fails_closed(self):
         obj = sample_deployment()
@@ -113,7 +113,7 @@ class CompileTests(unittest.TestCase):
                 manifests=[dep, cm],
                 generated={"services": {"gateway": {"image": DIGEST}}},
                 descriptor=sample_manifest(), output=Path(td))
-            self.assertEqual((Path(td) / "stacks/stations-gateway/files/configmaps/app-config/settings.json").read_text(), '{"enabled":true}')
+            self.assertEqual((Path(td) / "stacks/example-gateway/files/configmaps/app-config/settings.json").read_text(), '{"enabled":true}')
             self.assertIn("${KINGDOM_RELEASE_ROOT:?}/files/configmaps/app-config", compose["services"]["gateway"]["volumes"][-1]["source"])
 
     def test_unknown_pod_volume_kind_fails(self):
@@ -127,7 +127,7 @@ class CompileTests(unittest.TestCase):
     def test_semver_promotion_changes_only_digest_within_same_repository(self):
         previous, _ = self.compile()
         updated = json.loads(json.dumps(previous))
-        updated["services"]["gateway"]["image"] = "ghcr.io/dmitrichcom/remote-station@sha256:" + "b" * 64
+        updated["services"]["gateway"]["image"] = "ghcr.io/dmitrichcom/example-service@sha256:" + "b" * 64
         adjusted = expected_with_release_images(previous, updated, sample_manifest())
         self.assertEqual(semantic_diff(adjusted,updated), [])
         updated["services"]["gateway"]["read_only"] = False
