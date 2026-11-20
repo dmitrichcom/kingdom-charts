@@ -326,14 +326,14 @@
             "kind": "probe",
             "path": "ops/shadow/test_compile.py",
             "result": "present",
-            "sha256": "61d5a1ee9b021dc0b670ff0034908e180f1558e2889b12e6f2787e09d98f0d15",
+            "sha256": "d5f7e187883029c67ccac2611d11b1624f345110a491bcefd1ffdd49730cd44a",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "ops/shadow/test_compile.py",
             "result": "present",
-            "sha256": "5eeb599351ab0ad5dc77e3fefb747a1217117ee915c3e82cfa4c82b80581bd3a",
+            "sha256": "662a969691a18eb7e1f52f5a0bac242792af5403143fe861e114eb2815ab23f4",
             "nodeKind": "file"
           },
           {
@@ -409,7 +409,7 @@
     {
       "gate": "kubernetes-compiler",
       "definitionSha256": "01dbb144e9861be7227fa1ff151e54346af15e2fec4fe36d32c7f912ef786770",
-      "durationNanos": 1532097112
+      "durationNanos": 1794370873
     }
   ]
 }
