@@ -1,10 +1,13 @@
 """Contract tests for the offline Helm/dekube to Kingdom release compiler."""
 import json
 import tempfile
+import sys
+from unittest.mock import patch
+import yaml
 import unittest
 from pathlib import Path
 
-from compile import BundleError, compile_bundle, semantic_diff, expected_with_release_images
+from compile import BundleError, compile_bundle, semantic_diff, expected_with_release_images, main
 
 DIGEST = "ghcr.io/dmitrichcom/remote-station@sha256:" + "a" * 64
 
@@ -132,6 +135,28 @@ class CompileTests(unittest.TestCase):
         updated["services"]["gateway"]["image"] = "ghcr.io/dmitrichcom/untrusted@sha256:" + "b" * 64
         adjusted = expected_with_release_images(previous,updated,sample_manifest())
         self.assertTrue(semantic_diff(adjusted,updated))
+
+    def test_cli_retains_tagged_sources_outside_dekube_render_tree(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            rendered = root / "rendered.yaml"
+            source = root / "sources.yaml"
+            provisional = root / "generated.yaml"
+            descriptor = root / "descriptor.json"
+            render = yaml.safe_dump(sample_deployment())
+            rendered.write_text(render)
+            source.write_text(render)
+            provisional.write_text(yaml.safe_dump({"services": {"gateway": {"image": DIGEST}}}))
+            descriptor.write_text(json.dumps(sample_manifest()))
+            output = root / "out"
+            args = ["compile", "--rendered", str(rendered), "--dekube-compose", str(provisional),
+                    "--descriptor", str(descriptor), "--output", str(output), "--source-manifests", str(source)]
+            with patch.object(sys, "argv", args):
+                self.assertEqual(main(), 0)
+            self.assertEqual((output / "kubernetes/source-manifests.yaml").read_text(), render)
+            source.write_text(render + "---\nkind: Namespace\nmetadata:\n  name: other\n")
+            with patch.object(sys, "argv", args):
+                self.assertEqual(main(), 1)
 
     def test_semantic_diff_detects_security_regression(self):
         first, _ = self.compile()
