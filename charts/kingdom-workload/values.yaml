@@ -1,5 +1,7 @@
 name: ''
 replicas: 1
+application:
+  version: ""
 podSpec: {}
 podAnnotations: {}
 service:
