@@ -205,6 +205,7 @@ def _volumes(compose: dict, pod: dict, container: dict, stack: dict,
     expected_secrets = {namespaced_path(path) for path in (stack.get("secret_files") or {}).values()}
     seen_secrets = set()
     seen_persistent = set()
+    tmpfs = []
     for vm in container.get("volumeMounts") or []:
         volume = sources.get(vm.get("name"))
         require(volume is not None, f"unknown Kubernetes volumeMount: {vm.get('name')}")
@@ -231,6 +232,24 @@ def _volumes(compose: dict, pod: dict, container: dict, stack: dict,
             mount["source"] = "${KINGDOM_STACK_ROOT:?}/" + path
             mount["read_only"] = True
             seen_secrets.add(path)
+        elif "emptyDir" in volume:
+            empty = volume['emptyDir']
+            require(isinstance(empty, dict) and empty.get('medium') == 'Memory',
+                    'only bounded in-memory Kubernetes emptyDir is supported')
+            limit = empty.get('sizeLimit')
+            require(isinstance(limit, str) and re.fullmatch(r'[1-9][0-9]*(?:Mi|Gi)', limit),
+                    'emptyDir requires a positive Mi/Gi sizeLimit')
+            require(vm.get('readOnly', False) is False and not vm.get('subPath'),
+                    'memory emptyDir must be a writable whole-directory mount')
+            require(re.fullmatch(r'/[A-Za-z0-9_./-]+', target) and
+                    all(part not in ('.', '..') for part in target.split('/')),
+                    'invalid emptyDir destination')
+            bytes_limit = int(limit[:-2]) * (2**20 if limit.endswith('Mi') else 2**30)
+            require(bytes_limit <= 2**30, 'memory emptyDir exceeds per-volume size limit')
+            require(not any(item.startswith(target + ':') for item in tmpfs),
+                    'duplicate memory emptyDir target')
+            tmpfs.append(f'{target}:size={bytes_limit},mode=1777,noexec,nosuid,nodev')
+            continue
         elif "configMap" in volume:
             cm = (volume["configMap"] or {})
             name = cm.get("name")
@@ -255,6 +274,8 @@ def _volumes(compose: dict, pod: dict, container: dict, stack: dict,
     require(seen_persistent == set(stack.get("persistent_dirs") or []),
             f"persistent mount contract mismatch: {seen_persistent}")
     compose["volumes"] = result
+    if tmpfs:
+        compose["tmpfs"] = tmpfs
 
 
 def _ensure_no_plaintext_secret(manifests: list[dict]) -> None:
@@ -316,10 +337,8 @@ def compile_bundle(*, manifests: list[dict], generated: dict,
     dest = output / "stacks" / stack_id
     files_root = dest / "files"
     files_root.mkdir(parents=True, exist_ok=True)
-    # Preserve all ConfigMap data as concrete OCI files even when a service
-    # intentionally does not mount it (e.g. the current mutable stations.json).
-    # This allows source inspection and a future separately gated config
-    # rollout without changing today's Compose/runtime state semantics.
+    # Preserve all rendered ConfigMap data as concrete runtime files. Mounts
+    # remain entirely defined by the Kubernetes PodSpec and verified below.
     for config_name, config in sorted(configmaps.items()):
         require(re.fullmatch(r"[a-z0-9][a-z0-9.-]*", config_name),
                 f"unsafe ConfigMap name: {config_name!r}")
