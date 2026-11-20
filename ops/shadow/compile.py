@@ -400,6 +400,7 @@ def main() -> int:
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--expected-json", type=Path, help="optional normalized Compose golden contract")
     p.add_argument("--source-revision", default="")
+    p.add_argument("--source-manifests", type=Path, help="original tag-based Kubernetes manifests")
     p.add_argument("--chart-revision", default="")
     p.add_argument("--dekube-sha256", default="")
     args = p.parse_args()
@@ -416,6 +417,10 @@ def main() -> int:
         kube_dir = args.output / "kubernetes"
         kube_dir.mkdir(parents=True, exist_ok=True)
         (kube_dir / "manifests.yaml").write_bytes(args.rendered.read_bytes())
+        if args.source_manifests:
+            source_docs = load_rendered(args.source_manifests)
+            require(len(source_docs) == len(manifests), "source/pinned Kubernetes document count differs")
+            (kube_dir / "source-manifests.yaml").write_bytes(args.source_manifests.read_bytes())
         checksums = {}
         for fp in sorted(args.output.rglob("*")):
             if fp.is_file():
