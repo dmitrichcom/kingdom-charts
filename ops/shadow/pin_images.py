@@ -45,7 +45,19 @@ def pin(docs, expected_version, resolve):
 
 
 def oras_resolve(ref):
-    result = subprocess.run(['oras', 'resolve', ref], text=True, capture_output=True, timeout=30, check=True)
+    try:
+        result = subprocess.run(['oras', 'resolve', ref], text=True, capture_output=True,
+                                timeout=30, check=True)
+    except subprocess.CalledProcessError as error:
+        # The registry response may contain credentials; never echo stderr.
+        raise ValueError(
+            f'GitOps GHCR image unavailable: {ref}. Check the published tag and grant '
+            'the calling GitOps repository GHCR package Actions Read, or configure '
+            'a scoped KINGDOM_GHCR_READ_TOKEN secret.') from None
+    except subprocess.TimeoutExpired:
+        raise ValueError(f'GHCR image resolution timed out: {ref}') from None
+    except OSError:
+        raise ValueError('GHCR resolver (oras) unavailable in the build runner') from None
     return result.stdout.strip()
 
 

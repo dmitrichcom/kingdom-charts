@@ -291,7 +291,7 @@
             "kind": "probe",
             "path": "ops/shadow/README.md",
             "result": "present",
-            "sha256": "7107aedefbbc39ff7bc5ab65c9b0cd6987644521268132e7f9e45fb55e5fbc54",
+            "sha256": "1749ab276c6fc56d94a8c36bed624a0a90747b71089fa0280c930503507b427c",
             "nodeKind": "file"
           },
           {
@@ -312,14 +312,14 @@
             "kind": "probe",
             "path": "ops/shadow/pin_images.py",
             "result": "present",
-            "sha256": "9e622339252a101547dd72617f33b2a0ece9ca9312d6ceab2e9e52e95282ca74",
+            "sha256": "3b070b09fac1d21ff8dda82b8a065ac7d89a43ed78d589af827d2eb1b1d6e135",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "ops/shadow/pin_images.py",
             "result": "present",
-            "sha256": "ec12850f0a4246ce43e21b52ee86cdbda5130ce09bfe091806bb6e249e9088cf",
+            "sha256": "1b2233b780a69e0c16cacb63feb351d8aed8b616f64a2649ab24524825ea71c3",
             "nodeKind": "file"
           },
           {
@@ -368,14 +368,14 @@
             "kind": "probe",
             "path": "ops/shadow/test_pin_images.py",
             "result": "present",
-            "sha256": "51f38decddb986aa7eef29f89f0bfd60505e8fb9ed6bef025cad3ecd09690e55",
+            "sha256": "f1cf6b7243d0b24d3d277dbee82b855ca8269720274808a3268c97217fd928c4",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "ops/shadow/test_pin_images.py",
             "result": "present",
-            "sha256": "290aaa75b07ab4d81a1d5e614b0463f973fb99819b7b3c993ae9e0914f5b5fa6",
+            "sha256": "879037a015ee0e2deef5801ec061b320f4e65eaf6b6aa09b0a0f1207fd26fddf",
             "nodeKind": "file"
           },
           {
@@ -398,7 +398,7 @@
   ],
   "memory": {
     "definitionSha256": "11f7b9dd91a592de4f804d26f91ba9ccad1df9a0e1be3771366c9909511fbfa1",
-    "additionalBytes": 75722752
+    "additionalBytes": 94842880
   },
   "timings": [
     {
@@ -409,7 +409,7 @@
     {
       "gate": "kubernetes-compiler",
       "definitionSha256": "01dbb144e9861be7227fa1ff151e54346af15e2fec4fe36d32c7f912ef786770",
-      "durationNanos": 1794370873
+      "durationNanos": 1079825259
     }
   ]
 }
