@@ -1,0 +1,8 @@
+{{- range $resource := .Values.resources -}}
+{{- $object := deepCopy $resource -}}
+{{- if has $object.kind (list "ConfigMap" "Secret" "Service" "PersistentVolumeClaim" "NetworkPolicy") -}}
+{{- if not (hasKey $object.metadata "namespace") -}}{{- $_ := set $object.metadata "namespace" $.Release.Namespace -}}{{- end -}}
+{{- end -}}
+---
+{{ toYaml $object }}
+{{ end -}}

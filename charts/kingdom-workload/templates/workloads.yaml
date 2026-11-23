@@ -1,0 +1,38 @@
+{{- range $name, $workload := .Values.workloads -}}
+{{- $context := dict "root" $ "name" $name "workload" $workload -}}
+{{- $kind := $workload.kind | default "Deployment" -}}
+{{- $stack := include "kingdom.stack" $context -}}
+{{- $labels := include "kingdom.labels" $context | fromYaml -}}
+{{- $networks := include "kingdom.networks" $context | fromJson -}}
+{{- $annotations := deepCopy ($workload.podAnnotations | default dict) -}}
+{{- if hasKey $annotations "kingdom.dmitrich.com/compose-networks" -}}
+{{- fail "compose-networks is generated from workload.networks; do not duplicate it in podAnnotations" -}}
+{{- end -}}
+{{- if gt (len $networks) 0 -}}
+{{- $_ := set $annotations "kingdom.dmitrich.com/compose-networks" (toJson $networks) -}}
+{{- end -}}
+{{- $metadataAnnotations := deepCopy ($workload.annotations | default dict) -}}
+{{- $_ := set $metadataAnnotations "kingdom.dmitrich.com/stack" $stack -}}
+{{- $metadata := dict "name" $name "namespace" $.Release.Namespace "labels" $labels "annotations" $metadataAnnotations -}}
+{{- $pod := deepCopy $workload.podSpec -}}
+{{- $spec := deepCopy ($workload.workloadSpec | default dict) -}}
+{{- range $reserved := list "template" "selector" "replicas" -}}
+{{- if hasKey $spec $reserved -}}{{- fail (printf "workloadSpec.%s is chart-owned" $reserved) -}}{{- end -}}
+{{- end -}}
+{{- if eq $kind "Job" -}}
+{{- if not (hasKey $pod "restartPolicy") -}}{{- $_ := set $pod "restartPolicy" "Never" -}}{{- end -}}
+{{- if not (hasKey $spec "backoffLimit") -}}{{- $_ := set $spec "backoffLimit" 0 -}}{{- end -}}
+{{- else -}}
+{{- $replicas := 1 -}}
+{{- if hasKey $workload "replicas" -}}{{- $replicas = $workload.replicas -}}{{- end -}}
+{{- $_ := set $spec "replicas" $replicas -}}
+{{- $_ := set $spec "selector" (dict "matchLabels" (dict "app.kubernetes.io/name" $name "kingdom.dmitrich.com/stack" $stack)) -}}
+{{- end -}}
+{{- if and (eq $kind "StatefulSet") (not (hasKey $spec "serviceName")) -}}
+{{- $_ := set $spec "serviceName" $name -}}
+{{- end -}}
+{{- $_ := set $spec "template" (dict "metadata" (dict "labels" $labels "annotations" $annotations) "spec" $pod) -}}
+{{- $api := ternary "batch/v1" "apps/v1" (eq $kind "Job") -}}
+---
+{{ toYaml (dict "apiVersion" $api "kind" $kind "metadata" $metadata "spec" $spec) }}
+{{ end -}}

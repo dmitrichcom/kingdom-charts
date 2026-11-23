@@ -1,10 +1,5 @@
-name: ''
-replicas: 1
-application:
-  version: ""
-podSpec: {}
-podAnnotations: {}
-service:
-  enabled: false
-  type: ClusterIP
-  ports: []
+# Product configuration belongs to its deployment repository.
+stack: ""
+workloads: {}
+networks: {}
+resources: []

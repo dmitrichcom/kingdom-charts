@@ -1,0 +1,12 @@
+{{- range $name, $workload := .Values.workloads -}}
+{{- if $workload.service -}}
+{{- $context := dict "root" $ "name" $name "workload" $workload -}}
+{{- $stack := include "kingdom.stack" $context -}}
+{{- $spec := deepCopy $workload.service -}}
+{{- if hasKey $spec "selector" -}}{{- fail "service.selector is chart-owned" -}}{{- end -}}
+{{- if not (hasKey $spec "type") -}}{{- $_ := set $spec "type" "ClusterIP" -}}{{- end -}}
+{{- $_ := set $spec "selector" (dict "app.kubernetes.io/name" $name "kingdom.dmitrich.com/stack" $stack) -}}
+---
+{{ toYaml (dict "apiVersion" "v1" "kind" "Service" "metadata" (dict "name" $name "namespace" $.Release.Namespace) "spec" $spec) }}
+{{ end -}}
+{{ end -}}

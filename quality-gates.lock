@@ -12,6 +12,47 @@
         "inputs": [
           {
             "kind": "directory",
+            "path": ".",
+            "result": "present",
+            "sha256": "bc430d979321e0f545094eb469a1517c1ed44b9cc27fc7d09a54015fbde4e70f",
+            "nodeKind": "directory",
+            "entries": [
+              {
+                "path": ".git",
+                "kind": "directory"
+              },
+              {
+                "path": ".github",
+                "kind": "directory"
+              },
+              {
+                "path": "AGENTS.md",
+                "kind": "file"
+              },
+              {
+                "path": "README.md",
+                "kind": "file"
+              },
+              {
+                "path": "charts",
+                "kind": "directory"
+              },
+              {
+                "path": "quality-gates.yaml",
+                "kind": "file"
+              },
+              {
+                "path": "scripts",
+                "kind": "directory"
+              },
+              {
+                "path": "tests",
+                "kind": "directory"
+              }
+            ]
+          },
+          {
+            "kind": "directory",
             "path": "charts/kingdom-workload",
             "result": "present",
             "sha256": "b07a59c2282aa765b00ab4f3174e20f0ef408841dde9fde15197dc0af6f41967",
@@ -51,29 +92,41 @@
             "kind": "probe",
             "path": "charts/kingdom-workload/Chart.yaml",
             "result": "present",
-            "sha256": "69d2c75a352e8f02efb2c9b584724953e4b5e3d8290fb04504c73407fa62f2f7",
+            "sha256": "c33a3c847b08327a3ba632cec095ae9ba41dc2901ca8a7aaccb52662e6f93f38",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "charts/kingdom-workload/Chart.yaml",
             "result": "present",
-            "sha256": "b05a774938e695a2358838d6c2eba42c4109c5734408f5749c2b0ec7918558dd",
+            "sha256": "597b79a3b49be8ab033016232d274ae7a8fe20386556f7436218fef4828d2993",
             "nodeKind": "file"
           },
           {
             "kind": "directory",
             "path": "charts/kingdom-workload/templates",
             "result": "present",
-            "sha256": "1cc86c38b2db2e0c9a951852532aceaa6fa49faebcea6852d012b9c698367715",
+            "sha256": "93b921c0b720280fe2d07e96e8e59cf7de777aedc99669901e17a50d5d44af7d",
             "nodeKind": "directory",
             "entries": [
               {
-                "path": "deployment.yaml",
+                "path": "_helpers.tpl",
                 "kind": "file"
               },
               {
-                "path": "service.yaml",
+                "path": "networks.yaml",
+                "kind": "file"
+              },
+              {
+                "path": "resources.yaml",
+                "kind": "file"
+              },
+              {
+                "path": "services.yaml",
+                "kind": "file"
+              },
+              {
+                "path": "workloads.yaml",
                 "kind": "file"
               }
             ]
@@ -87,100 +140,166 @@
           },
           {
             "kind": "probe",
-            "path": "charts/kingdom-workload/templates/deployment.yaml",
+            "path": "charts/kingdom-workload/templates/_helpers.tpl",
             "result": "present",
-            "sha256": "3dbdd23cd2aed0e6070abb3af75b509a2004f6f57509c1a38cd39ff3f15ab704",
+            "sha256": "f358874b4ae83bd62fad92d28954ec3e10a54367fa04f07ba3ca89fd87aaa24b",
             "nodeKind": "file"
           },
           {
             "kind": "read",
-            "path": "charts/kingdom-workload/templates/deployment.yaml",
+            "path": "charts/kingdom-workload/templates/_helpers.tpl",
             "result": "present",
-            "sha256": "161c21d8caf27be571b6ceb14b628d89a0249372752134996dd9cadce24c1895",
+            "sha256": "2cac2a5d02db4263e90d47609866c816a66f65a221bb42ab2d249010680a45a9",
             "nodeKind": "file"
           },
           {
             "kind": "probe",
-            "path": "charts/kingdom-workload/templates/service.yaml",
+            "path": "charts/kingdom-workload/templates/networks.yaml",
             "result": "present",
-            "sha256": "2a32ceb3d51dc9649b85f09789babd41e7dc67fe6531254a213deee46917aae1",
+            "sha256": "4f093bced0d38c053d716009ad7aef616c3f84dba7ff270af6860c8921460683",
             "nodeKind": "file"
           },
           {
             "kind": "read",
-            "path": "charts/kingdom-workload/templates/service.yaml",
+            "path": "charts/kingdom-workload/templates/networks.yaml",
             "result": "present",
-            "sha256": "d46611654951bf1a0fa231d0245b775b1ed6978c8643512e448255d02a5f698d",
+            "sha256": "f53cd7acbfcda4127624354b6da7dcb61d8cde7e77b55dcbd724250dc93815c2",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "probe",
+            "path": "charts/kingdom-workload/templates/resources.yaml",
+            "result": "present",
+            "sha256": "7a55864d14962e2bc621bda87bd2456c04f1fdd8569ae3a16bcda56d7f7c172b",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "read",
+            "path": "charts/kingdom-workload/templates/resources.yaml",
+            "result": "present",
+            "sha256": "456f1d70f099822774beb1018718016520bd42953a723ce89abd12b27f725f19",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "probe",
+            "path": "charts/kingdom-workload/templates/services.yaml",
+            "result": "present",
+            "sha256": "759567e95301b6ababed74a500a737c6ce2037ae2bd1aa5730f35aa5c71636b5",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "read",
+            "path": "charts/kingdom-workload/templates/services.yaml",
+            "result": "present",
+            "sha256": "5585c7d17db10d7e6d3510a07d801a312df99f2e1c83b1e606948a3f452e7dd2",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "probe",
+            "path": "charts/kingdom-workload/templates/workloads.yaml",
+            "result": "present",
+            "sha256": "2831a4a8af0cf6183ccf9a5fb82db23f6b3afd600eba5fad5c84374967aa429a",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "read",
+            "path": "charts/kingdom-workload/templates/workloads.yaml",
+            "result": "present",
+            "sha256": "f0bbca1c8dd6887df100cf101b3c9c01483e8511a6164d448ed8320f7804b201",
             "nodeKind": "file"
           },
           {
             "kind": "probe",
             "path": "charts/kingdom-workload/values.schema.json",
             "result": "present",
-            "sha256": "9622cc6bb120bf3acd29270da6082cef712af5ca78f8b670bfaf2e2e5bf3c265",
+            "sha256": "b7ed55ccb54bd35eba14d7baa7e314ee8f08742520168e6b09fc01a4ebb99cfb",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "charts/kingdom-workload/values.schema.json",
             "result": "present",
-            "sha256": "e79dc25349d56af3360f0771ea3f62ea090957afafaf94e1fe4ab62ee4d6cd58",
+            "sha256": "cd61418859c2580a927b8172e7963103e2ac9d30f763be1b330db6463e31fc6d",
             "nodeKind": "file"
           },
           {
             "kind": "probe",
             "path": "charts/kingdom-workload/values.yaml",
             "result": "present",
-            "sha256": "cda4be88b95225ebb77c64ccffacbb13e809eb78728f6b208148a4bdc5d025a9",
+            "sha256": "e9c2bed9e1740e0c260ca2f5b2116583351d496553269372b8112de3f86c074b",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "charts/kingdom-workload/values.yaml",
             "result": "present",
-            "sha256": "85df4ec07c954d6d5cd9cfa31abdc479d68a0184222d59c3b3ed6823cd5b699e",
+            "sha256": "a67fd8292de82105dfc161a33160c1c538de5ded8ecb6d2404b1f279eadf5e3f",
             "nodeKind": "file"
           },
           {
             "kind": "probe",
             "path": "scripts/test-chart.sh",
             "result": "present",
-            "sha256": "2d3a874efd7baf94c9857ac1b3ee338e1ca76d790adb6c41a90336e360e99160",
+            "sha256": "d99a7ce87ee970e57dbb363ae350776cc8ec098849afd208b6386d25c11dc924",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "scripts/test-chart.sh",
             "result": "present",
-            "sha256": "dac2cc13a6c729ba4e8b93bee653e8ab1ade2ffb448800416ee9e621211ae59c",
+            "sha256": "ff7c274e8c86033a2ae7000992862b210b93027adbe7218184f7ce54e3001148",
             "nodeKind": "file"
           },
           {
-            "kind": "probe",
-            "path": "tests/values-version.yaml",
+            "kind": "directory",
+            "path": "tests",
             "result": "present",
-            "sha256": "deb4b643bd61e382ccdb8d3a85c134973111dff5c7b047cf1b77c80dc6c553e5",
+            "sha256": "affb5162bed843c1083a6a75b710ec6aa9f4e87d2ab67b176f72f6b014dde800",
+            "nodeKind": "directory",
+            "entries": [
+              {
+                "path": "test_chart.py",
+                "kind": "file"
+              },
+              {
+                "path": "workloads.yaml",
+                "kind": "file"
+              }
+            ]
+          },
+          {
+            "kind": "probe",
+            "path": "tests",
+            "result": "present",
+            "sha256": "b94e2b88d768ddd93a501eb784e9fb8e84a04f9fe48a0d3399cbf1959f60f96c",
+            "nodeKind": "directory"
+          },
+          {
+            "kind": "probe",
+            "path": "tests/test_chart.py",
+            "result": "present",
+            "sha256": "42e30c82140ea9366eb1615a7b21408ea2e39233920eda5f3e6b8af027e063d5",
             "nodeKind": "file"
           },
           {
             "kind": "read",
-            "path": "tests/values-version.yaml",
+            "path": "tests/test_chart.py",
             "result": "present",
-            "sha256": "dcae0a435a7f483eee058c6770e0f92513e8b53ffaf2aaa1f3fc73f38b6df029",
+            "sha256": "811307091af7ed3d8b8b533089333cb949e504b9f1510e6aa8059d6e4e61ca17",
             "nodeKind": "file"
           },
           {
             "kind": "probe",
-            "path": "tests/values.yaml",
+            "path": "tests/workloads.yaml",
             "result": "present",
-            "sha256": "09114045c78f12a9230c3d68d2472a298e9a9bc83fcaa28e6ca8dda26443cd47",
+            "sha256": "57d7516d1cdcdd7a58b3dc9c228db2a3da0e79f4490efa0f3ab557206dc83775",
             "nodeKind": "file"
           },
           {
             "kind": "read",
-            "path": "tests/values.yaml",
+            "path": "tests/workloads.yaml",
             "result": "present",
-            "sha256": "1e6b4370d56294de24984cc91808030bfc63d76a1775f75a5f5e3403969eabc5",
+            "sha256": "114252e41b405dc0af3b4cf8c7d88710b06ab27a293cac66f3998b78886d1f62",
             "nodeKind": "file"
           }
         ]
@@ -397,14 +516,14 @@
     }
   ],
   "memory": {
-    "definitionSha256": "11f7b9dd91a592de4f804d26f91ba9ccad1df9a0e1be3771366c9909511fbfa1",
-    "additionalBytes": 94842880
+    "definitionSha256": "6a627ad3c07424b024dcccc84143fb843e41a2963144a876d23fba798dc9aaae",
+    "additionalBytes": 33136640
   },
   "timings": [
     {
       "gate": "helm-template",
       "definitionSha256": "596dbf06e39a7a3314587852c2386eb9354f41576e0a5add79f6fadee15281b5",
-      "durationNanos": 438925200
+      "durationNanos": 756074568
     },
     {
       "gate": "kubernetes-compiler",

@@ -6,19 +6,33 @@ on:
 permissions:
   contents: read
 jobs:
-  tests:
+  quality:
+    name: Verify existing GREEN attestations
     runs-on: ubuntu-24.04
+    timeout-minutes: 3
     steps:
+      - name: Require a trusted repository branch
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo '::error::Fork branches cannot access the private verifier. A maintainer must review and import the change into a branch in this repository.'
+          exit 1
       - uses: actions/checkout@v4
-      - uses: azure/setup-helm@v4
         with:
-          version: v3.19.0
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Install pinned compiler test dependencies
-        run: python -m pip install 'PyYAML==6.0.3'
-      - name: Validate Helm charts (same command as qgate gate)
-        run: sh scripts/test-chart.sh
-      - name: Validate Kubernetes compiler (same command as qgate gate)
-        run: sh scripts/test-compiler.sh
+          persist-credentials: false
+      - name: Install the verified QGate release
+        env:
+          GH_TOKEN: ${{ secrets.KINGDOM_HARNESS_READ_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$GH_TOKEN" || { echo '::error::KINGDOM_HARNESS_READ_TOKEN must have contents:read on coding-harness-utilities'; exit 1; }
+          verifier="$RUNNER_TEMP/kingdom-qgate"
+          mkdir -p "$verifier"
+          gh release download qgate-v0.16.3 \
+            --repo dmitrichcom/coding-harness-utilities \
+            --pattern qgate-linux-amd64 --dir "$verifier"
+          printf '%s  %s\n' \
+            7a161e713de3ac5ac9f67d6d5d17b8600f4e3e2d4d970e79774daf55c0b604da \
+            "$verifier/qgate-linux-amd64" | sha256sum --check --status
+          chmod 755 "$verifier/qgate-linux-amd64"
+      - name: Verify attestations without executing tests
+        run: '"$RUNNER_TEMP/kingdom-qgate/qgate-linux-amd64" run --only-fresh'
