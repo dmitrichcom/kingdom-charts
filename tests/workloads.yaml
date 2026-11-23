@@ -1,0 +1,65 @@
+networks:
+  backend:
+    internal: true
+  code:
+    internal: true
+  outbound:
+    internal: false
+workloads:
+  api:
+    kind: Deployment
+    replicas: 2
+    networks: [backend, code, outbound]
+    podSpec:
+      containers:
+        - name: api
+          image: registry.example.test/team/api:v2.3.4
+          ports:
+            - name: http
+              containerPort: 8080
+    service:
+      ports:
+        - name: http
+          port: 8080
+          targetPort: http
+  worker:
+    kind: Deployment
+    networks: [code]
+    podSpec:
+      runtimeClassName: runsc
+      containers:
+        - name: worker
+          image: ghcr.io/example/worker:independent-version
+  database:
+    kind: StatefulSet
+    networks: [backend]
+    workloadSpec:
+      serviceName: database
+    podSpec:
+      containers:
+        - name: postgres
+          image: postgres:17-alpine
+    service:
+      clusterIP: None
+      ports:
+        - name: postgres
+          port: 5432
+  migrate:
+    kind: Job
+    networks: [backend]
+    workloadSpec:
+      backoffLimit: 0
+    podSpec:
+      restartPolicy: Never
+      containers:
+        - name: migration
+          image: registry.example.test/team/migration:v2.3.4
+          command: [/app]
+          args: [migrate]
+resources:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: example-settings
+    data:
+      settings.json: '{"enabled":true}'

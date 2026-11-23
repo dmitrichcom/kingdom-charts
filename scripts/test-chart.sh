@@ -11,3 +11,4 @@ helm template versioned charts/kingdom-workload --namespace dev -f tests/values-
 trap 'rm -f /tmp/kingdom-chart-render-$$.yaml /tmp/kingdom-versioned-render-$$.yaml' EXIT HUP INT TERM
 grep -q 'image: ghcr.io/dmitrichcom/demo:v1.2.3' /tmp/kingdom-versioned-render-$$.yaml
 grep -q 'image: ghcr.io/dmitrichcom/demo-worker:v1.2.3' /tmp/kingdom-versioned-render-$$.yaml
+python3 -m unittest discover -s tests -p 'test_*.py'
