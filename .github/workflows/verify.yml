@@ -7,6 +7,32 @@ permissions:
   contents: read
 jobs:
   quality:
-    uses: dmitrichcom/ci-workflows/.github/workflows/verify-quality-gates.yml@4101f7ba333694354e1d30039fa813ba08713dc2
-    with:
-      project_directories: '["."]'
+    name: Verify existing GREEN attestations
+    runs-on: ubuntu-24.04
+    timeout-minutes: 3
+    steps:
+      - name: Require a trusted repository branch
+        if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository
+        run: |
+          echo '::error::Fork branches cannot access the private verifier. A maintainer must review and import the change into a branch in this repository.'
+          exit 1
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Install the verified QGate release
+        env:
+          GH_TOKEN: ${{ secrets.KINGDOM_HARNESS_READ_TOKEN }}
+        run: |
+          set -euo pipefail
+          test -n "$GH_TOKEN" || { echo '::error::KINGDOM_HARNESS_READ_TOKEN must have contents:read on coding-harness-utilities'; exit 1; }
+          verifier="$RUNNER_TEMP/kingdom-qgate"
+          mkdir -p "$verifier"
+          gh release download qgate-v0.16.3 \
+            --repo dmitrichcom/coding-harness-utilities \
+            --pattern qgate-linux-amd64 --dir "$verifier"
+          printf '%s  %s\n' \
+            7a161e713de3ac5ac9f67d6d5d17b8600f4e3e2d4d970e79774daf55c0b604da \
+            "$verifier/qgate-linux-amd64" | sha256sum --check --status
+          chmod 755 "$verifier/qgate-linux-amd64"
+      - name: Verify attestations without executing tests
+        run: '"$RUNNER_TEMP/kingdom-qgate/qgate-linux-amd64" run --only-fresh'

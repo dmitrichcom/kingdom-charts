@@ -79,9 +79,18 @@ and explicit errors are documented in `deployments/render/README.md`.
 
 Run `qgate run` with Helm 3.19.0 and PyYAML 6.0.3 available. The gate lints and
 renders native workloads, Services, ConfigMaps and NetworkPolicies, and checks
-independent image references and invalid inputs. CI calls the immutable
-`ci-workflows` quality verifier with `--only-fresh` behavior. Test execution and
-the generated `quality-gates.lock` remain QGate's responsibility.
+independent image references and invalid inputs. CI runs only `qgate run
+--only-fresh`; it does not rerun Helm tests or install their dependencies.
+The generated `quality-gates.lock` remains QGate's responsibility.
+
+Because this repository is public, GitHub does not permit it to call the private
+`ci-workflows` reusable workflow. `.github/workflows/verify.yml` is a thin local
+entry point: it downloads `qgate-v0.16.3` from `coding-harness-utilities`, checks the
+reviewed SHA-256, and verifies the existing attestation. Its only secret,
+`KINGDOM_HARNESS_READ_TOKEN`, needs contents-read permission on that harness
+repository. No application or delivery credentials belong here. Fork pull
+requests stop before checkout or credential use; a maintainer must review and
+import the change into a branch in this repository before verification.
 
 The 0.2 values API replaces the old single `name/podSpec` chart interface. Existing
 consumers remain reproducible through their already pinned chart commits. New

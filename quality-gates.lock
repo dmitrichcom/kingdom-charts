@@ -14,7 +14,7 @@
             "kind": "directory",
             "path": ".",
             "result": "present",
-            "sha256": "fff863ad7a9ddf7e3ddfa052dc05a00ee0be827189163ca39c57a9744fca3d38",
+            "sha256": "bc430d979321e0f545094eb469a1517c1ed44b9cc27fc7d09a54015fbde4e70f",
             "nodeKind": "directory",
             "entries": [
               {
@@ -35,10 +35,6 @@
               },
               {
                 "path": "charts",
-                "kind": "directory"
-              },
-              {
-                "path": "ops",
                 "kind": "directory"
               },
               {
@@ -527,7 +523,7 @@
     {
       "gate": "helm-template",
       "definitionSha256": "596dbf06e39a7a3314587852c2386eb9354f41576e0a5add79f6fadee15281b5",
-      "durationNanos": 596118431
+      "durationNanos": 756074568
     },
     {
       "gate": "kubernetes-compiler",

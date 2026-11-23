@@ -13,6 +13,11 @@ containers. Preserve explicitly selected image references.
 
 Use `qgate run` for local chart tests. The Helm/PyYAML runner reports missing
 dependencies as ENVFAIL. Do not edit `quality-gates.lock` manually. CI verifies
-the resulting attestations through `ci-workflows` without rerunning test suites.
+the resulting attestations with `qgate run --only-fresh` without rerunning tests.
+This repository is public, so its thin verification workflow cannot call the
+private `ci-workflows` reusable workflow. It downloads the SHA-256-pinned verifier
+from `coding-harness-utilities` using `KINGDOM_HARNESS_READ_TOKEN`, scoped to read
+that repository. Fork changes require maintainer review and a repository branch;
+the workflow stops before checkout or credential use for a fork pull request.
 Test native Kubernetes output and explicit product-independent contracts;
 never compare generated output with a historical product Compose file.
