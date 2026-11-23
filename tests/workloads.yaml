@@ -1,3 +1,4 @@
+stack: example-app
 networks:
   backend:
     internal: true

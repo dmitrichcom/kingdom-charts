@@ -28,7 +28,7 @@ class PortableWorkloads(unittest.TestCase):
 
     def test_service_and_configmap_remain_kubernetes_resources(self):
         service = self.resources["Service", "api"]
-        self.assertEqual(service["spec"]["selector"], {"app.kubernetes.io/name": "api"})
+        self.assertEqual(service["spec"]["selector"], {"app.kubernetes.io/name": "api", "kingdom.dmitrich.com/stack": "example-app"})
         self.assertEqual(service["spec"]["ports"][0]["targetPort"], "http")
         self.assertEqual(self.resources["Service", "database"]["spec"]["clusterIP"], "None")
         self.assertEqual(self.resources["ConfigMap", "example-settings"]["data"]["settings.json"], '{"enabled":true}')
@@ -36,9 +36,10 @@ class PortableWorkloads(unittest.TestCase):
     def test_network_membership_is_native_policy_and_explicit_docker_input(self):
         policy = self.resources["NetworkPolicy", "worker-connectivity"]["spec"]
         self.assertEqual(policy["policyTypes"], ["Ingress", "Egress"])
-        self.assertEqual(policy["podSelector"], {"matchLabels": {"app.kubernetes.io/name": "worker"}})
-        self.assertEqual(policy["ingress"], [{"from": [{"podSelector": {"matchLabels": {"kingdom.dmitrich.com/network-code": "true"}}}]}])
-        self.assertEqual(policy["egress"], [{"to": [{"podSelector": {"matchLabels": {"kingdom.dmitrich.com/network-code": "true"}}}]}])
+        self.assertEqual(policy["podSelector"], {"matchLabels": {"app.kubernetes.io/name": "worker", "kingdom.dmitrich.com/stack": "example-app"}})
+        peer = {"podSelector": {"matchLabels": {"kingdom.dmitrich.com/stack": "example-app", "kingdom.dmitrich.com/network-code": "true"}}}
+        self.assertEqual(policy["ingress"], [{"from": [peer]}])
+        self.assertEqual(policy["egress"], [{"to": [peer]}])
         self.assertEqual(self.resources["NetworkPolicy", "api-connectivity"]["spec"]["egress"], [{}])
         template = self.resources["Deployment", "worker"]["spec"]["template"]
         self.assertEqual(template["metadata"]["labels"]["kingdom.dmitrich.com/network-code"], "true")
