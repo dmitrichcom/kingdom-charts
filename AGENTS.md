@@ -21,3 +21,9 @@ that repository. Fork changes require maintainer review and a repository branch;
 the workflow stops before checkout or credential use for a fork pull request.
 Test native Kubernetes output and explicit product-independent contracts;
 never compare generated output with a historical product Compose file.
+
+## Platform overview
+
+Maintain the [Kingdom overview](https://github.com/dmitrichcom/kingdom-overview) when platform capabilities, ownership boundaries, or guarantees change.
+
+Follow its [documentation maintenance rules](https://github.com/dmitrichcom/kingdom-overview/blob/HEAD/AGENTS.md). Include required overview updates in the same change scope.
