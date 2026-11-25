@@ -31,19 +31,25 @@ class PortableWorkloads(unittest.TestCase):
         self.assertEqual(service["spec"]["selector"], {"app.kubernetes.io/name": "api", "kingdom.dmitrich.com/stack": "example-app"})
         self.assertEqual(service["spec"]["ports"][0]["targetPort"], "http")
         self.assertEqual(self.resources["Service", "database"]["spec"]["clusterIP"], "None")
+        self.assertIs(self.resources["Service", "database"]["spec"]["publishNotReadyAddresses"], True)
         self.assertEqual(self.resources["ConfigMap", "example-settings"]["data"]["settings.json"], '{"enabled":true}')
 
-    def test_network_membership_is_native_policy_and_explicit_docker_input(self):
+    def test_authored_native_policies_preserve_peer_selectors_and_namespace(self):
         policy = self.resources["NetworkPolicy", "worker-connectivity"]["spec"]
         self.assertEqual(policy["policyTypes"], ["Ingress", "Egress"])
         self.assertEqual(policy["podSelector"], {"matchLabels": {"app.kubernetes.io/name": "worker", "kingdom.dmitrich.com/stack": "example-app"}})
-        peer = {"podSelector": {"matchLabels": {"kingdom.dmitrich.com/stack": "example-app", "kingdom.dmitrich.com/network-code": "true"}}}
+        peer = {"podSelector": {"matchLabels": {"kingdom.dmitrich.com/stack": "example-app", "app.kubernetes.io/name": "api"}}}
         self.assertEqual(policy["ingress"], [{"from": [peer]}])
         self.assertEqual(policy["egress"], [{"to": [peer]}])
         self.assertEqual(self.resources["NetworkPolicy", "api-connectivity"]["spec"]["egress"], [{}])
-        template = self.resources["Deployment", "worker"]["spec"]["template"]
-        self.assertEqual(template["metadata"]["labels"]["kingdom.dmitrich.com/network-code"], "true")
-        self.assertEqual(json.loads(template["metadata"]["annotations"]["kingdom.dmitrich.com/compose-networks"]), {"code": {"internal": True}})
+        for name in ("worker-connectivity", "api-connectivity"):
+            self.assertEqual(self.resources["NetworkPolicy", name]["metadata"]["namespace"], "test-environment")
+
+    def test_native_policy_port_semantics_remain_an_adapter_decision(self):
+        docs = self.render_telemetry("--set", "resources[0].spec.ingress[0].ports[0].port=8081",
+                                     "--set", "resources[0].spec.ingress[0].ports[0].protocol=TCP")
+        self.assertEqual(docs["NetworkPolicy", "worker-connectivity"]["spec"]["ingress"][0]["ports"],
+                         [{"port": 8081, "protocol": "TCP"}])
 
     def render_telemetry(self, *overrides, success=True):
         command = ["helm", "template", "example", "charts/kingdom-workload", "-f", "tests/workloads.yaml", *overrides]
@@ -64,13 +70,14 @@ class PortableWorkloads(unittest.TestCase):
         })
         annotations = pod["metadata"]["annotations"]
         self.assertEqual(json.loads(annotations["kingdom.dmitrich.com/extra-hosts"]), ["otel.kingdom.internal=host-gateway"])
-        self.assertEqual(json.loads(annotations["kingdom.dmitrich.com/compose-networks"]), {"backend": {"internal": True}, "code": {"internal": True}, "outbound": {"internal": False}})
         worker = docs["Deployment", "worker"]["spec"]["template"]
         self.assertNotIn("env", worker["spec"]["containers"][0])
         self.assertNotIn("kingdom.dmitrich.com/extra-hosts", worker["metadata"]["annotations"])
 
-    def test_trace_opt_in_refuses_internal_only_and_host_network(self):
-        self.assertIn("outbound", self.render_telemetry("--set", "workloads.worker.telemetry.traces=true", success=False))
+    def test_trace_opt_in_keeps_policy_validation_in_the_runtime_adapter(self):
+        docs = self.render_telemetry("--set", "workloads.worker.telemetry.traces=true")
+        self.assertEqual(docs["NetworkPolicy", "worker-connectivity"]["spec"],
+                         self.resources["NetworkPolicy", "worker-connectivity"]["spec"])
         self.assertIn("hostNetwork", self.render_telemetry("--set", "workloads.api.telemetry.traces=true", "--set", "workloads.api.podSpec.hostNetwork=true", success=False))
 
     def test_trace_opt_in_preserves_existing_mapping_and_rejects_conflict(self):
@@ -91,8 +98,8 @@ class PortableWorkloads(unittest.TestCase):
         self.assertNotIn("kingdom.dmitrich.com/extra-hosts", pod["metadata"]["annotations"])
         self.render_telemetry("--set-string", "workloads.api.telemetry.traces=true", success=False)
 
-    def test_bad_kind_and_undeclared_network_are_rejected(self):
-        for args in (["--set", "workloads.api.kind=DaemonSet"], ["--set", "workloads.worker.networks[0]=missing"]):
+    def test_invalid_workload_kind_and_conflicting_service_selector_are_rejected(self):
+        for args in (["--set", "workloads.api.kind=DaemonSet"], ["--set", "workloads.api.service.selector.app=foreign"]):
             result = subprocess.run(["helm", "template", "example", "charts/kingdom-workload", "-f", "tests/workloads.yaml", *args], text=True, capture_output=True)
             self.assertNotEqual(result.returncode, 0, result.stdout)
 

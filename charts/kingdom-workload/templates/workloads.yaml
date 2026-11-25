@@ -3,20 +3,18 @@
 {{- $kind := $workload.kind | default "Deployment" -}}
 {{- $stack := include "kingdom.stack" $context -}}
 {{- $labels := include "kingdom.labels" $context | fromYaml -}}
-{{- $networks := include "kingdom.networks" $context | fromJson -}}
 {{- $annotations := deepCopy ($workload.podAnnotations | default dict) -}}
-{{- if hasKey $annotations "kingdom.dmitrich.com/compose-networks" -}}
-{{- fail "compose-networks is generated from workload.networks; do not duplicate it in podAnnotations" -}}
+{{- range $key := list "kingdom.dmitrich.com/compose-networks" "kingdom.dmitrich.com/compose-network-external" -}}
+{{- if hasKey $annotations $key -}}
+{{- fail (printf "%s is not supported; declare native Service and NetworkPolicy resources" $key) -}}
 {{- end -}}
-{{- if gt (len $networks) 0 -}}
-{{- $_ := set $annotations "kingdom.dmitrich.com/compose-networks" (toJson $networks) -}}
 {{- end -}}
 {{- $metadataAnnotations := deepCopy ($workload.annotations | default dict) -}}
 {{- $_ := set $metadataAnnotations "kingdom.dmitrich.com/stack" $stack -}}
 {{- $metadata := dict "name" $name "namespace" $.Release.Namespace "labels" $labels "annotations" $metadataAnnotations -}}
 {{- $pod := deepCopy $workload.podSpec -}}
 {{- if ($workload.telemetry | default dict).traces -}}
-{{- include "kingdom.telemetry.traces" (dict "pod" $pod "annotations" $annotations "networks" $networks) -}}
+{{- include "kingdom.telemetry.traces" (dict "pod" $pod "annotations" $annotations) -}}
 {{- end -}}
 {{- $spec := deepCopy ($workload.workloadSpec | default dict) -}}
 {{- range $reserved := list "template" "selector" "replicas" -}}

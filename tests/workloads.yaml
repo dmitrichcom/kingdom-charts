@@ -1,16 +1,8 @@
 stack: example-app
-networks:
-  backend:
-    internal: true
-  code:
-    internal: true
-  outbound:
-    internal: false
 workloads:
   api:
     kind: Deployment
     replicas: 2
-    networks: [backend, code, outbound]
     podSpec:
       containers:
         - name: api
@@ -25,7 +17,6 @@ workloads:
           targetPort: http
   worker:
     kind: Deployment
-    networks: [code]
     podSpec:
       runtimeClassName: runsc
       containers:
@@ -33,7 +24,6 @@ workloads:
           image: ghcr.io/example/worker:independent-version
   database:
     kind: StatefulSet
-    networks: [backend]
     workloadSpec:
       serviceName: database
     podSpec:
@@ -42,12 +32,12 @@ workloads:
           image: postgres:17-alpine
     service:
       clusterIP: None
+      publishNotReadyAddresses: true
       ports:
         - name: postgres
           port: 5432
   migrate:
     kind: Job
-    networks: [backend]
     workloadSpec:
       backoffLimit: 0
     podSpec:
@@ -58,6 +48,45 @@ workloads:
           command: [/app]
           args: [migrate]
 resources:
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: worker-connectivity
+    spec:
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: worker
+          kingdom.dmitrich.com/stack: example-app
+      policyTypes: [Ingress, Egress]
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: api
+                  kingdom.dmitrich.com/stack: example-app
+      egress:
+        - to:
+            - podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: api
+                  kingdom.dmitrich.com/stack: example-app
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: api-connectivity
+    spec:
+      podSelector:
+        matchLabels:
+          app.kubernetes.io/name: api
+          kingdom.dmitrich.com/stack: example-app
+      policyTypes: [Ingress, Egress]
+      ingress:
+        - from:
+            - podSelector:
+                matchLabels:
+                  app.kubernetes.io/name: worker
+                  kingdom.dmitrich.com/stack: example-app
+      egress: [{}]
   - apiVersion: v1
     kind: ConfigMap
     metadata:

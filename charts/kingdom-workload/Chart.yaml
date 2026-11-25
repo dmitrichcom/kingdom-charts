@@ -1,5 +1,5 @@
 apiVersion: v2
 name: kingdom-workload
-version: 0.2.0
-description: Native Kubernetes workloads, services and explicit network groups. Target conversion and delivery belong to Kingdom CD.
+version: 0.3.0
+description: Native Kubernetes workloads, services and network policies. Target conversion and delivery belong to Kingdom CD.
 type: application
