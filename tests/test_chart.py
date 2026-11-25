@@ -45,6 +45,52 @@ class PortableWorkloads(unittest.TestCase):
         self.assertEqual(template["metadata"]["labels"]["kingdom.dmitrich.com/network-code"], "true")
         self.assertEqual(json.loads(template["metadata"]["annotations"]["kingdom.dmitrich.com/compose-networks"]), {"code": {"internal": True}})
 
+    def render_telemetry(self, *overrides, success=True):
+        command = ["helm", "template", "example", "charts/kingdom-workload", "-f", "tests/workloads.yaml", *overrides]
+        result = subprocess.run(command, capture_output=True, text=True)
+        if not success:
+            self.assertNotEqual(result.returncode, 0, result.stdout)
+            return result.stderr
+        self.assertEqual(result.returncode, 0, result.stderr)
+        return {(doc["kind"], doc["metadata"]["name"]): doc for doc in yaml.safe_load_all(result.stdout) if doc}
+
+    def test_trace_opt_in_adds_only_endpoint_and_protocol_and_reuses_host_binding(self):
+        docs = self.render_telemetry("--set", "workloads.api.telemetry.traces=true")
+        pod = docs["Deployment", "api"]["spec"]["template"]
+        env = {v["name"]: v["value"] for v in pod["spec"]["containers"][0]["env"]}
+        self.assertEqual(env, {
+            "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT": "http://otel.kingdom.internal:4318/v1/traces",
+            "OTEL_EXPORTER_OTLP_TRACES_PROTOCOL": "http/protobuf",
+        })
+        annotations = pod["metadata"]["annotations"]
+        self.assertEqual(json.loads(annotations["kingdom.dmitrich.com/extra-hosts"]), ["otel.kingdom.internal=host-gateway"])
+        self.assertEqual(json.loads(annotations["kingdom.dmitrich.com/compose-networks"]), {"backend": {"internal": True}, "code": {"internal": True}, "outbound": {"internal": False}})
+        worker = docs["Deployment", "worker"]["spec"]["template"]
+        self.assertNotIn("env", worker["spec"]["containers"][0])
+        self.assertNotIn("kingdom.dmitrich.com/extra-hosts", worker["metadata"]["annotations"])
+
+    def test_trace_opt_in_refuses_internal_only_and_host_network(self):
+        self.assertIn("outbound", self.render_telemetry("--set", "workloads.worker.telemetry.traces=true", success=False))
+        self.assertIn("hostNetwork", self.render_telemetry("--set", "workloads.api.telemetry.traces=true", "--set", "workloads.api.podSpec.hostNetwork=true", success=False))
+
+    def test_trace_opt_in_preserves_existing_mapping_and_rejects_conflict(self):
+        key = r"workloads.api.podAnnotations.kingdom\.dmitrich\.com/extra-hosts"
+        docs = self.render_telemetry("--set", "workloads.api.telemetry.traces=true", "--set-string", key + r'=\{"existing.internal":"host-gateway"\}')
+        hosts = json.loads(docs["Deployment", "api"]["spec"]["template"]["metadata"]["annotations"]["kingdom.dmitrich.com/extra-hosts"])
+        self.assertEqual(set(hosts), {"existing.internal=host-gateway", "otel.kingdom.internal=host-gateway"})
+        self.assertIn("telemetry", self.render_telemetry("--set", "workloads.api.telemetry.traces=true", "--set-string", key + r'=\{"otel.kingdom.internal":"192.0.2.1"\}', success=False))
+
+    def test_trace_transport_cannot_conflict_with_product_environment(self):
+        err = self.render_telemetry("--set", "workloads.api.telemetry.traces=true", "--set", "workloads.api.podSpec.containers[0].env[0].name=OTEL_EXPORTER_OTLP_TRACES_ENDPOINT", "--set", "workloads.api.podSpec.containers[0].env[0].value=https://wrong.example/v1/traces", success=False)
+        self.assertIn("owns transport settings", err)
+
+    def test_trace_opt_out_and_invalid_values(self):
+        docs = self.render_telemetry("--set", "workloads.api.telemetry.traces=false")
+        pod = docs["Deployment", "api"]["spec"]["template"]
+        self.assertNotIn("env", pod["spec"]["containers"][0])
+        self.assertNotIn("kingdom.dmitrich.com/extra-hosts", pod["metadata"]["annotations"])
+        self.render_telemetry("--set-string", "workloads.api.telemetry.traces=true", success=False)
+
     def test_bad_kind_and_undeclared_network_are_rejected(self):
         for args in (["--set", "workloads.api.kind=DaemonSet"], ["--set", "workloads.worker.networks[0]=missing"]):
             result = subprocess.run(["helm", "template", "example", "charts/kingdom-workload", "-f", "tests/workloads.yaml", *args], text=True, capture_output=True)

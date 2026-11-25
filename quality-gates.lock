@@ -106,11 +106,15 @@
             "kind": "directory",
             "path": "charts/kingdom-workload/templates",
             "result": "present",
-            "sha256": "93b921c0b720280fe2d07e96e8e59cf7de777aedc99669901e17a50d5d44af7d",
+            "sha256": "673eb7478ab59ebda2294f4baaceead3dd8761ee59931c76d35bfb06fb5bb47f",
             "nodeKind": "directory",
             "entries": [
               {
                 "path": "_helpers.tpl",
+                "kind": "file"
+              },
+              {
+                "path": "_telemetry.tpl",
                 "kind": "file"
               },
               {
@@ -150,6 +154,20 @@
             "path": "charts/kingdom-workload/templates/_helpers.tpl",
             "result": "present",
             "sha256": "2cac2a5d02db4263e90d47609866c816a66f65a221bb42ab2d249010680a45a9",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "probe",
+            "path": "charts/kingdom-workload/templates/_telemetry.tpl",
+            "result": "present",
+            "sha256": "9e0da43ffcb12632c057d3827d00af1ac99460306321c6ff2c1fee30b264c2c0",
+            "nodeKind": "file"
+          },
+          {
+            "kind": "read",
+            "path": "charts/kingdom-workload/templates/_telemetry.tpl",
+            "result": "present",
+            "sha256": "fc591838b4a4b2b0b419722da56f8896c5d2467748eef4d61bb7c3e4ae877274",
             "nodeKind": "file"
           },
           {
@@ -198,28 +216,28 @@
             "kind": "probe",
             "path": "charts/kingdom-workload/templates/workloads.yaml",
             "result": "present",
-            "sha256": "2831a4a8af0cf6183ccf9a5fb82db23f6b3afd600eba5fad5c84374967aa429a",
+            "sha256": "c5a9839dff97fe1e724e4e505a97c58d36360e2aeb436e94caa552bb5bfdc9e1",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "charts/kingdom-workload/templates/workloads.yaml",
             "result": "present",
-            "sha256": "f0bbca1c8dd6887df100cf101b3c9c01483e8511a6164d448ed8320f7804b201",
+            "sha256": "134a8daf59b450ea3bf0280ca4eaced35e9cd17395f59979afd79b8118058af4",
             "nodeKind": "file"
           },
           {
             "kind": "probe",
             "path": "charts/kingdom-workload/values.schema.json",
             "result": "present",
-            "sha256": "b7ed55ccb54bd35eba14d7baa7e314ee8f08742520168e6b09fc01a4ebb99cfb",
+            "sha256": "590ed04fbe6829f4f26563f5ca6b8330a42ec1fa872668858bd919d60f04f2d4",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "charts/kingdom-workload/values.schema.json",
             "result": "present",
-            "sha256": "cd61418859c2580a927b8172e7963103e2ac9d30f763be1b330db6463e31fc6d",
+            "sha256": "38be32b53714a95805bd09118123c7fe1b9c7cb6892685b75537e62a2b6d6dea",
             "nodeKind": "file"
           },
           {
@@ -278,14 +296,14 @@
             "kind": "probe",
             "path": "tests/test_chart.py",
             "result": "present",
-            "sha256": "42e30c82140ea9366eb1615a7b21408ea2e39233920eda5f3e6b8af027e063d5",
+            "sha256": "5ed889dd0fefde1c3aa730fde095fcbf9f49ad990d0bcf10cdfabec7569d99f9",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "tests/test_chart.py",
             "result": "present",
-            "sha256": "811307091af7ed3d8b8b533089333cb949e504b9f1510e6aa8059d6e4e61ca17",
+            "sha256": "16ff4037308bad843c0089827486fb202a5163df5e417a00a4bb163a40246ebf",
             "nodeKind": "file"
           },
           {
@@ -517,13 +535,13 @@
   ],
   "memory": {
     "definitionSha256": "6a627ad3c07424b024dcccc84143fb843e41a2963144a876d23fba798dc9aaae",
-    "additionalBytes": 33136640
+    "additionalBytes": 167878656
   },
   "timings": [
     {
       "gate": "helm-template",
       "definitionSha256": "596dbf06e39a7a3314587852c2386eb9354f41576e0a5add79f6fadee15281b5",
-      "durationNanos": 756074568
+      "durationNanos": 2344989962
     },
     {
       "gate": "kubernetes-compiler",

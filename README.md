@@ -52,6 +52,7 @@ workloads:
 | `service` | Native Service specification. The chart owns its workload selector. |
 | `podAnnotations`, `podLabels`, `annotations` | Metadata. Generated identity/network keys cannot be overridden. |
 | `networks` | Declared connectivity groups with explicit `internal` flags. Every workload selects its groups when the map is nonempty. |
+| `telemetry.traces` | Opt in to platform OTLP trace ingestion. Requires an existing outbound network. |
 | `resources` | Additional native Kubernetes objects, such as ConfigMaps and PVCs. Backend capability validation remains a CD responsibility. |
 
 Images are complete references selected by the product. Different containers can
@@ -74,6 +75,20 @@ policies, its RuntimeClasses, storage provisioning and runtime secret bindings.
 Specific Docker host mappings stay in backend annotations; `host-gateway` is
 never a Kubernetes `hostAliases.ip` value. The Docker adapter's supported subset
 and explicit errors are documented in `deployments/render/README.md`.
+
+## Application traces
+
+Set `workloads.<name>.telemetry.traces: true` to use the shared host collector.
+The chart injects `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` and
+`OTEL_EXPORTER_OTLP_TRACES_PROTOCOL` into regular containers and generates the
+existing typed Docker `extra-hosts` mapping. Network membership does not change.
+An internal-only or host-network workload cannot opt in. The chart rejects
+conflicting transport settings and host mappings. Products own instrumentation,
+service identity and sampling. Remove product-specific export endpoints and
+cloud credentials when migrating. See the
+[observability integration contract](https://github.com/dmitrichcom/infra-ops/blob/HEAD/docs/observability.md)
+for the admitted networks and actual host readiness. Kubernetes deployment of
+this endpoint is not implemented by the chart.
 
 ## Development and CI
 
