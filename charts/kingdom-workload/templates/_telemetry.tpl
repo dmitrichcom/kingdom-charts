@@ -4,11 +4,6 @@
 {{- if .pod.hostNetwork -}}
 {{- fail "telemetry.traces does not support hostNetwork" -}}
 {{- end -}}
-{{- $outbound := eq (len .networks) 0 -}}
-{{- range $_, $network := .networks -}}
-{{- if not $network.internal -}}{{- $outbound = true -}}{{- end -}}
-{{- end -}}
-{{- if not $outbound -}}{{- fail "telemetry.traces requires an existing outbound network" -}}{{- end -}}
 {{- $key := "kingdom.dmitrich.com/extra-hosts" -}}
 {{- $host := "otel.kingdom.internal" -}}
 {{- $hosts := list -}}

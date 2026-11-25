@@ -1,5 +1,4 @@
 # Product configuration belongs to its deployment repository.
 stack: ""
 workloads: {}
-networks: {}
 resources: []
