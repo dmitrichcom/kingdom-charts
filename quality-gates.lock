@@ -303,6 +303,33 @@
             "nodeKind": "file"
           }
         ]
+      },
+      "red": {
+        "fromGreen": {
+          "overrides": [
+            {
+              "kind": "structure",
+              "path": ".",
+              "result": "present",
+              "sha256": "f93abbe35fa6e08090dc036632575a06992982a0b92715bc343ebf63ee49f1af"
+            },
+            {
+              "kind": "probe",
+              "path": "tests/test_chart.py",
+              "result": "present",
+              "sha256": "52d794fb34a76b2fa561f50def7e6c6c7afeeec4a464e2184d154241813683df"
+            },
+            {
+              "kind": "read",
+              "path": "tests/test_chart.py",
+              "result": "present",
+              "sha256": "0fc89b7651c826e47e66ca07a7e347c68508315ac28888952b4d8afa2a3bd807"
+            }
+          ]
+        },
+        "execution": {
+          "kind": "full"
+        }
       }
     },
     {
