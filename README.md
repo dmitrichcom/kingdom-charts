@@ -25,6 +25,7 @@ workloads:
             exec: {command: [/app, healthcheck]}
     service:
       clusterIP: None
+      publishNotReadyAddresses: true
       ports: [{name: http, port: 8080, targetPort: http}]
   postgres:
     kind: StatefulSet
@@ -37,6 +38,7 @@ workloads:
           ports: [{name: postgres, containerPort: 5432}]
     service:
       clusterIP: None
+      publishNotReadyAddresses: true
       ports: [{name: postgres, port: 5432, targetPort: postgres}]
 resources:
   - apiVersion: networking.k8s.io/v1
@@ -94,6 +96,9 @@ network names or require per-application host network grants.
 
 The initial Docker subset supports one container and replica per workload,
 headless Services without port translation, and all-port `matchLabels` peers.
+Services explicitly set `publishNotReadyAddresses: true`, matching Docker DNS
+aliases which remain resolvable independently of container health. Application
+health checks still gate successful delivery; they do not filter Service DNS.
 A cross-namespace peer must combine its pod selector with an exact
 `kubernetes.io/metadata.name` namespace selector. Effective peer communication
 must be symmetric because a Docker bridge permits both directions. Restricted

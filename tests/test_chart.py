@@ -31,6 +31,7 @@ class PortableWorkloads(unittest.TestCase):
         self.assertEqual(service["spec"]["selector"], {"app.kubernetes.io/name": "api", "kingdom.dmitrich.com/stack": "example-app"})
         self.assertEqual(service["spec"]["ports"][0]["targetPort"], "http")
         self.assertEqual(self.resources["Service", "database"]["spec"]["clusterIP"], "None")
+        self.assertIs(self.resources["Service", "database"]["spec"]["publishNotReadyAddresses"], True)
         self.assertEqual(self.resources["ConfigMap", "example-settings"]["data"]["settings.json"], '{"enabled":true}')
 
     def test_authored_native_policies_preserve_peer_selectors_and_namespace(self):

@@ -32,6 +32,7 @@ workloads:
           image: postgres:17-alpine
     service:
       clusterIP: None
+      publishNotReadyAddresses: true
       ports:
         - name: postgres
           port: 5432
