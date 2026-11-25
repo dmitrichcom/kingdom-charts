@@ -33,6 +33,7 @@
         "podAnnotations": {"$ref": "#/definitions/stringMap"},
         "podLabels": {"$ref": "#/definitions/stringMap"},
         "networks": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}},
+        "telemetry": {"type": "object", "additionalProperties": false, "required": ["traces"], "properties": {"traces": {"type": "boolean"}}},
         "podSpec": {"type": "object", "required": ["containers"], "properties": {"containers": {"$ref": "#/definitions/containers"}, "initContainers": {"$ref": "#/definitions/containers"}}},
         "workloadSpec": {"type": "object", "properties": {"template": false, "selector": false, "replicas": false}},
         "service": {"type": "object", "required": ["ports"], "properties": {"selector": false, "ports": {"type": "array", "minItems": 1}}}

@@ -15,6 +15,9 @@
 {{- $_ := set $metadataAnnotations "kingdom.dmitrich.com/stack" $stack -}}
 {{- $metadata := dict "name" $name "namespace" $.Release.Namespace "labels" $labels "annotations" $metadataAnnotations -}}
 {{- $pod := deepCopy $workload.podSpec -}}
+{{- if ($workload.telemetry | default dict).traces -}}
+{{- include "kingdom.telemetry.traces" (dict "pod" $pod "annotations" $annotations "networks" $networks) -}}
+{{- end -}}
 {{- $spec := deepCopy ($workload.workloadSpec | default dict) -}}
 {{- range $reserved := list "template" "selector" "replicas" -}}
 {{- if hasKey $spec $reserved -}}{{- fail (printf "workloadSpec.%s is chart-owned" $reserved) -}}{{- end -}}

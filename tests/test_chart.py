@@ -80,6 +80,17 @@ class PortableWorkloads(unittest.TestCase):
         self.assertEqual(set(hosts), {"existing.internal=host-gateway", "otel.kingdom.internal=host-gateway"})
         self.assertIn("telemetry", self.render_telemetry("--set", "workloads.api.telemetry.traces=true", "--set-string", key + r'=\{"otel.kingdom.internal":"192.0.2.1"\}', success=False))
 
+    def test_trace_transport_cannot_conflict_with_product_environment(self):
+        err = self.render_telemetry("--set", "workloads.api.telemetry.traces=true", "--set", "workloads.api.podSpec.containers[0].env[0].name=OTEL_EXPORTER_OTLP_TRACES_ENDPOINT", "--set", "workloads.api.podSpec.containers[0].env[0].value=https://wrong.example/v1/traces", success=False)
+        self.assertIn("owns transport settings", err)
+
+    def test_trace_opt_out_and_invalid_values(self):
+        docs = self.render_telemetry("--set", "workloads.api.telemetry.traces=false")
+        pod = docs["Deployment", "api"]["spec"]["template"]
+        self.assertNotIn("env", pod["spec"]["containers"][0])
+        self.assertNotIn("kingdom.dmitrich.com/extra-hosts", pod["metadata"]["annotations"])
+        self.render_telemetry("--set-string", "workloads.api.telemetry.traces=true", success=False)
+
     def test_bad_kind_and_undeclared_network_are_rejected(self):
         for args in (["--set", "workloads.api.kind=DaemonSet"], ["--set", "workloads.worker.networks[0]=missing"]):
             result = subprocess.run(["helm", "template", "example", "charts/kingdom-workload", "-f", "tests/workloads.yaml", *args], text=True, capture_output=True)
