@@ -35,4 +35,10 @@ jobs:
             "$verifier/qgate-linux-amd64" | sha256sum --check --status
           chmod 755 "$verifier/qgate-linux-amd64"
       - name: Verify attestations without executing tests
-        run: '"$RUNNER_TEMP/kingdom-qgate/qgate-linux-amd64" run --only-fresh'
+        run: |
+          set -euo pipefail
+          source_tree="$RUNNER_TEMP/kingdom-chart-source"
+          mkdir -p "$source_tree"
+          git archive HEAD | tar -x -C "$source_tree"
+          cd "$source_tree"
+          "$RUNNER_TEMP/kingdom-qgate/qgate-linux-amd64" run --only-fresh
