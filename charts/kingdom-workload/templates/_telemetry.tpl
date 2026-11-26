@@ -1,35 +1,10 @@
-{{/* Native OTLP environment and an existing typed Docker host binding. No
-     shared network, credentials, or implicit egress exceptions. */}}
+{{/* Native OTLP environment. Infrastructure DNS and transport belong to the
+     platform provider; this chart adds no network grants or backend metadata. */}}
 {{- define "kingdom.telemetry.traces" -}}
 {{- if .pod.hostNetwork -}}
 {{- fail "telemetry.traces does not support hostNetwork" -}}
 {{- end -}}
-{{- $key := "kingdom.dmitrich.com/extra-hosts" -}}
 {{- $host := "otel.kingdom.internal" -}}
-{{- $hosts := list -}}
-{{- if hasKey .annotations $key -}}
-{{- $existing := mustFromJson (index .annotations $key) -}}
-{{- if kindIs "map" $existing -}}
-{{- range $name, $address := $existing -}}
-{{- if not (kindIs "string" $address) -}}{{- fail "invalid extra-hosts for telemetry" -}}{{- end -}}
-{{- $hosts = append $hosts (printf "%s=%s" $name $address) -}}
-{{- end -}}
-{{- else if kindIs "slice" $existing -}}
-{{- $hosts = $existing -}}
-{{- else -}}{{- fail "invalid extra-hosts for telemetry" -}}{{- end -}}
-{{- end -}}
-{{- range $entry := $hosts -}}
-{{- if not (kindIs "string" $entry) -}}{{- fail "invalid extra-hosts for telemetry" -}}{{- end -}}
-{{- if or (hasPrefix (printf "%s=" $host) (lower $entry)) (hasPrefix (printf "%s:" $host) (lower $entry)) -}}
-{{- fail "telemetry owns the otel.kingdom.internal host mapping" -}}
-{{- end -}}
-{{- end -}}
-{{- range $alias := .pod.hostAliases | default list -}}
-{{- range $name := $alias.hostnames -}}
-{{- if eq (lower $name) $host -}}{{- fail "telemetry owns the otel.kingdom.internal host mapping" -}}{{- end -}}
-{{- end -}}
-{{- end -}}
-{{- $_ := set .annotations $key (toJson (append $hosts (printf "%s=host-gateway" $host))) -}}
 {{- $settings := list (dict "name" "OTEL_EXPORTER_OTLP_TRACES_ENDPOINT" "value" (printf "http://%s:4318/v1/traces" $host)) (dict "name" "OTEL_EXPORTER_OTLP_TRACES_PROTOCOL" "value" "http/protobuf") -}}
 {{- range $container := .pod.containers -}}
 {{- $env := $container.env | default list -}}
