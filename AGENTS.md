@@ -6,8 +6,8 @@ Image building belongs to `ci-workflows`; rendering adapters, image resolution,
 runtime packaging, secret publication and host activation belong to `deployments`.
 
 Chart templates emit native Kubernetes resources. Never embed Compose-only
-values such as `host-gateway` or `${ENV}` into typed Kubernetes fields. Typed
-backend bindings belong in documented annotations and are interpreted by CD.
+values such as `host-gateway` or `${ENV}` into typed Kubernetes fields. Docker provider defaults and infrastructure bindings belong to CD and infra-ops;
+never generate backend annotations in Kubernetes resources.
 Charts must not resolve image tags or enforce one registry/release tag for all
 containers. Preserve explicitly selected image references.
 

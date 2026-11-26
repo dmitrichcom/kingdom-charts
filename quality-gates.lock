@@ -14,13 +14,9 @@
             "kind": "directory",
             "path": ".",
             "result": "present",
-            "sha256": "bc430d979321e0f545094eb469a1517c1ed44b9cc27fc7d09a54015fbde4e70f",
+            "sha256": "b08728e169a1a9d74fff1f96bcc0388bc12e496ebb5e2866a969aa603d57b512",
             "nodeKind": "directory",
             "entries": [
-              {
-                "path": ".git",
-                "kind": "directory"
-              },
               {
                 "path": ".github",
                 "kind": "directory"
@@ -156,14 +152,14 @@
             "kind": "probe",
             "path": "charts/kingdom-workload/templates/_telemetry.tpl",
             "result": "present",
-            "sha256": "b259800b3a9fbbbbd3fa6456a42a209f1fd794e00633d3e365b5f8ab4a233b4e",
+            "sha256": "199102c8b7480b8b36139235c4bbad75856de05ab752aa78923cdba47eed2ef9",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "charts/kingdom-workload/templates/_telemetry.tpl",
             "result": "present",
-            "sha256": "09ad4fc3e9236c707f7e8fd54e5ac43ffdb66ec06cb835d14bb7fb9b0ce491ac",
+            "sha256": "9d397310e570db9cb4dfe752a6614af8a363fdc3c564722fb514e08c15b42a0d",
             "nodeKind": "file"
           },
           {
@@ -198,14 +194,14 @@
             "kind": "probe",
             "path": "charts/kingdom-workload/templates/workloads.yaml",
             "result": "present",
-            "sha256": "8d374e8d7f75dab731b8cc529bb4522b08d1f801633e2a68ae160d9a38a36980",
+            "sha256": "7f48f7baa266fa883056b424b9adf24ff15c5b5368a7b328bee5aaa976033c0a",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "charts/kingdom-workload/templates/workloads.yaml",
             "result": "present",
-            "sha256": "0fcc9df6954370c7dd563fcc208dff526f93219282499f5dcec8b15129c16c53",
+            "sha256": "4311019c69275f6c85d247647fe3f4ef73d8c9f6b0b56b7badf1800cbf2891bd",
             "nodeKind": "file"
           },
           {
@@ -276,21 +272,16 @@
           },
           {
             "kind": "probe",
-            "path": "tests/__pycache__/test_chart.cpython-312.pyc",
-            "result": "missing"
-          },
-          {
-            "kind": "probe",
             "path": "tests/test_chart.py",
             "result": "present",
-            "sha256": "fa0f7ed20866bd9a7a186247d1e1f432d0ce86152d43259afd145817f7ab5b74",
+            "sha256": "acb0bafd8e26666b3628820d6e286dc3b09b298c3355c778f03207c331287c91",
             "nodeKind": "file"
           },
           {
             "kind": "read",
             "path": "tests/test_chart.py",
             "result": "present",
-            "sha256": "d460f897de9279ec24452c4cc16d86e6b7630e105f0d34e4de749b490c8abf40",
+            "sha256": "75193b6c3a6d497201e4adeb2ae1bebd578f06949a0c8cf46a5a9dceb79fb94c",
             "nodeKind": "file"
           },
           {
@@ -528,7 +519,7 @@
     {
       "gate": "helm-template",
       "definitionSha256": "596dbf06e39a7a3314587852c2386eb9354f41576e0a5add79f6fadee15281b5",
-      "durationNanos": 1062723352
+      "durationNanos": 1095068583
     },
     {
       "gate": "kubernetes-compiler",

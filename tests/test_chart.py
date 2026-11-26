@@ -26,6 +26,13 @@ class PortableWorkloads(unittest.TestCase):
         self.assertEqual(self.resources["Job", "migrate"]["spec"]["backoffLimit"], 0)
         self.assertEqual(self.resources["Job", "migrate"]["spec"]["template"]["spec"]["restartPolicy"], "Never")
 
+    def test_workload_identity_needs_no_platform_annotations(self):
+        for (kind, name), resource in self.resources.items():
+            if kind in {"Deployment", "StatefulSet", "Job"}:
+                with self.subTest(kind=kind, name=name):
+                    self.assertNotIn("kingdom.dmitrich.com/stack", resource["metadata"].get("annotations", {}))
+                    self.assertIn("kingdom.dmitrich.com/stack", resource["metadata"]["labels"])
+
     def test_service_and_configmap_remain_kubernetes_resources(self):
         service = self.resources["Service", "api"]
         self.assertEqual(service["spec"]["selector"], {"app.kubernetes.io/name": "api", "kingdom.dmitrich.com/stack": "example-app"})
@@ -60,7 +67,7 @@ class PortableWorkloads(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stderr)
         return {(doc["kind"], doc["metadata"]["name"]): doc for doc in yaml.safe_load_all(result.stdout) if doc}
 
-    def test_trace_opt_in_adds_only_endpoint_and_protocol_and_reuses_host_binding(self):
+    def test_trace_opt_in_adds_standard_environment_without_docker_annotations(self):
         docs = self.render_telemetry("--set", "workloads.api.telemetry.traces=true")
         pod = docs["Deployment", "api"]["spec"]["template"]
         env = {v["name"]: v["value"] for v in pod["spec"]["containers"][0]["env"]}
@@ -69,7 +76,7 @@ class PortableWorkloads(unittest.TestCase):
             "OTEL_EXPORTER_OTLP_TRACES_PROTOCOL": "http/protobuf",
         })
         annotations = pod["metadata"]["annotations"]
-        self.assertEqual(json.loads(annotations["kingdom.dmitrich.com/extra-hosts"]), ["otel.kingdom.internal=host-gateway"])
+        self.assertNotIn("kingdom.dmitrich.com/extra-hosts", annotations)
         worker = docs["Deployment", "worker"]["spec"]["template"]
         self.assertNotIn("env", worker["spec"]["containers"][0])
         self.assertNotIn("kingdom.dmitrich.com/extra-hosts", worker["metadata"]["annotations"])
@@ -80,12 +87,13 @@ class PortableWorkloads(unittest.TestCase):
                          self.resources["NetworkPolicy", "worker-connectivity"]["spec"])
         self.assertIn("hostNetwork", self.render_telemetry("--set", "workloads.api.telemetry.traces=true", "--set", "workloads.api.podSpec.hostNetwork=true", success=False))
 
-    def test_trace_opt_in_preserves_existing_mapping_and_rejects_conflict(self):
-        key = r"workloads.api.podAnnotations.kingdom\.dmitrich\.com/extra-hosts"
-        docs = self.render_telemetry("--set", "workloads.api.telemetry.traces=true", "--set-string", key + r'=\{"existing.internal":"host-gateway"\}')
-        hosts = json.loads(docs["Deployment", "api"]["spec"]["template"]["metadata"]["annotations"]["kingdom.dmitrich.com/extra-hosts"])
-        self.assertEqual(set(hosts), {"existing.internal=host-gateway", "otel.kingdom.internal=host-gateway"})
-        self.assertIn("telemetry", self.render_telemetry("--set", "workloads.api.telemetry.traces=true", "--set-string", key + r'=\{"otel.kingdom.internal":"192.0.2.1"\}', success=False))
+    def test_trace_opt_in_preserves_native_host_aliases(self):
+        docs = self.render_telemetry("--set", "workloads.api.telemetry.traces=true",
+                                     "--set", "workloads.api.podSpec.hostAliases[0].ip=192.0.2.10",
+                                     "--set", "workloads.api.podSpec.hostAliases[0].hostnames[0]=database.example.test")
+        pod = docs["Deployment", "api"]["spec"]["template"]
+        self.assertEqual(pod["spec"]["hostAliases"], [{"ip": "192.0.2.10", "hostnames": ["database.example.test"]}])
+        self.assertNotIn("kingdom.dmitrich.com/extra-hosts", pod["metadata"].get("annotations", {}))
 
     def test_trace_transport_cannot_conflict_with_product_environment(self):
         err = self.render_telemetry("--set", "workloads.api.telemetry.traces=true", "--set", "workloads.api.podSpec.containers[0].env[0].name=OTEL_EXPORTER_OTLP_TRACES_ENDPOINT", "--set", "workloads.api.podSpec.containers[0].env[0].value=https://wrong.example/v1/traces", success=False)

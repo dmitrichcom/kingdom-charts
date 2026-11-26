@@ -94,8 +94,12 @@ repository's `docker-release` branch. The host derives private pair bridges and
 Service DNS aliases from this admitted intent. Products do not choose Docker
 network names or require per-application host network grants.
 
-The initial Docker subset supports one container and replica per workload,
-headless Services without port translation, and all-port `matchLabels` peers.
+The Docker adapter supports one container and replica per workload,
+headless Services and provider-backed LoadBalancer Services, and all-port
+`matchLabels` peers. LoadBalancer Services use standard `loadBalancerClass`,
+`loadBalancerSourceRanges`, `externalTrafficPolicy` and IP-family fields.
+The environment provider owns interface selection and publication; Service
+ports can differ from named container target ports.
 Services explicitly set `publishNotReadyAddresses: true`, matching Docker DNS
 aliases which remain resolvable independently of container health. Application
 health checks still gate successful delivery; they do not filter Service DNS.
@@ -109,8 +113,9 @@ An isolated worker receives no implicit internet or peer-network access.
 The chart remains usable for native Kubernetes features outside that Docker
 subset; the adapter owns rejection of unsupported targets. Kubernetes delivery
 needs a CNI enforcing the policies, RuntimeClasses, storage provisioning and
-runtime secret bindings. Existing generic Docker host mappings stay in backend
-annotations; `host-gateway` is never a Kubernetes `hostAliases.ip` value. See
+runtime secret bindings. Infrastructure DNS aliases are supplied by the environment provider.
+`host-gateway` is never a Kubernetes `hostAliases.ip` value or an application
+annotation. Workload ownership uses namespace and identity labels. See
 [`deployments/render/README.md`](https://github.com/dmitrichcom/deployments/blob/main/render/README.md)
 for the exact backend contract and extension boundary.
 
@@ -118,16 +123,15 @@ for the exact backend contract and extension boundary.
 
 Set `workloads.<name>.telemetry.traces: true` to use the shared host collector.
 The chart injects `OTEL_EXPORTER_OTLP_TRACES_ENDPOINT` and
-`OTEL_EXPORTER_OTLP_TRACES_PROTOCOL` into regular containers and generates the
-existing typed Docker `extra-hosts` mapping. Network policy does not change.
+`OTEL_EXPORTER_OTLP_TRACES_PROTOCOL` into regular containers. The environment
+provides DNS for `otel.kingdom.internal`; Kubernetes output contains only native
+container environment entries. Network policy does not change.
 The adapter rejects tracing when native policy provides no outbound capability;
-the chart rejects host networking, conflicting transport settings and host
-mappings. Products own instrumentation,
+the chart rejects host networking and conflicting transport settings. Products own instrumentation,
 service identity and sampling. Remove product-specific export endpoints and
 cloud credentials when migrating. See the
 [observability integration contract](https://github.com/dmitrichcom/infra-ops/blob/HEAD/docs/observability.md)
-for the admitted networks and actual host readiness. Kubernetes deployment of
-this endpoint is not implemented by the chart.
+for the admitted networks and actual host readiness. The collector endpoint is infrastructure owned in both Docker and Kubernetes.
 
 ## Development and CI
 
@@ -146,9 +150,6 @@ repository. No application or delivery credentials belong here. Fork pull
 requests stop before checkout or credential use; a maintainer must review and
 import the change into a branch in this repository before verification.
 
-The 0.3 values API uses native policies in `resources` in place of the 0.2
-`networks` fields. Existing consumers remain reproducible through their already
-pinned chart commits. New deployment repositories use the workload map and
-native connectivity resources. The previous `ops/shadow` compiler
-and image-pinning scripts have moved into the separate CD responsibilities in
-`deployments/render` and `deployments/runtime`; the chart contains only Helm logic.
+Deployment repositories use the workload map and native connectivity resources.
+The chart contains only Helm logic. Compilation, image pinning and runtime
+packaging belong to `deployments/render` and `deployments/runtime`.
